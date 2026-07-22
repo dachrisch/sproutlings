@@ -1,4 +1,6 @@
+import { useCallback } from 'react';
 import { useGameStore } from '../store/gameStore';
+import { playPurchase } from '../audio';
 import {
   SEED_PRICE, PLOT_CAP, plotPrice, LUCK_LEVEL_CAP, luckUpgradePrice,
   HAT_BOX_PRICE, HATS, SPARKLE_BASE_CHANCE, SPARKLE_PER_LUCK_LEVEL,
@@ -11,9 +13,10 @@ export function Shop() {
   const plotCount = useGameStore((s) => s.plotCount);
   const luckLevel = useGameStore((s) => s.luckLevel);
   const ownedHats = useGameStore((s) => s.ownedHats);
+  const sound = useGameStore((s) => s.settings.sound);
   const buySeeds = useGameStore((s) => s.buySeeds);
-  const buyPlot = useGameStore((s) => s.buyPlot);
-  const buyLuckUpgrade = useGameStore((s) => s.buyLuckUpgrade);
+  const buyPlotAct = useGameStore((s) => s.buyPlot);
+  const buyLuck = useGameStore((s) => s.buyLuckUpgrade);
   const buyHatBox = useGameStore((s) => s.buyHatBox);
 
   const plotCost = plotPrice(plotCount);
@@ -24,6 +27,14 @@ export function Shop() {
   const sparkleChance = Math.min(
     SPARKLE_BASE_CHANCE + luckLevel * SPARKLE_PER_LUCK_LEVEL,
     SPARKLE_CHANCE_CAP
+  );
+
+  const wrap = useCallback(
+    (fn: () => boolean | string | null) => () => {
+      const ok = fn();
+      if (ok && sound) playPurchase();
+    },
+    [sound]
   );
 
   return (
@@ -40,7 +51,7 @@ export function Shop() {
           </div>
           <div className="shop-action">
             <span className="shop-price">{SEED_PRICE}🪙</span>
-            <button className="buy-btn" disabled={coins < SEED_PRICE} onClick={buySeeds} type="button">
+            <button className="buy-btn" disabled={coins < SEED_PRICE} onClick={wrap(buySeeds)} type="button">
               Buy
             </button>
           </div>
@@ -54,7 +65,7 @@ export function Shop() {
           </div>
           <div className="shop-action">
             <span className="shop-price">{Math.floor(plotCost)}🪙</span>
-            <button className="buy-btn" disabled={plotMaxed || coins < plotCost} onClick={buyPlot} type="button">
+            <button className="buy-btn" disabled={plotMaxed || coins < plotCost} onClick={wrap(buyPlotAct)} type="button">
               {plotMaxed ? 'Full!' : 'Buy'}
             </button>
           </div>
@@ -68,7 +79,7 @@ export function Shop() {
           </div>
           <div className="shop-action">
             <span className="shop-price">{Math.floor(luckCost)}🪙</span>
-            <button className="buy-btn" disabled={luckMaxed || coins < luckCost} onClick={buyLuckUpgrade} type="button">
+            <button className="buy-btn" disabled={luckMaxed || coins < luckCost} onClick={wrap(buyLuck)} type="button">
               {luckMaxed ? 'Maxed!' : 'Buy'}
             </button>
           </div>
@@ -82,7 +93,7 @@ export function Shop() {
           </div>
           <div className="shop-action">
             <span className="shop-price">{HAT_BOX_PRICE}🪙</span>
-            <button className="buy-btn" disabled={hatsAllOwned || coins < HAT_BOX_PRICE} onClick={buyHatBox} type="button">
+            <button className="buy-btn" disabled={hatsAllOwned || coins < HAT_BOX_PRICE} onClick={wrap(buyHatBox)} type="button">
               {hatsAllOwned ? 'All done!' : 'Buy'}
             </button>
           </div>

@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useGameStore } from '../store/gameStore';
+import { playPlant, playWater, playHatch, playCoin } from '../audio';
 import type { Plot } from '../types';
 
 interface PlotCellProps {
@@ -19,6 +20,7 @@ export function PlotCell({ plot }: PlotCellProps) {
   const waterPlotAct = useGameStore((s) => s.waterPlot);
   const hatchFn = useGameStore((s) => s.hatchPlot);
   const seeds = useGameStore((s) => s.seeds);
+  const sound = useGameStore((s) => s.settings.sound);
   const reducedMotion = useGameStore((s) => s.settings.reducedMotion);
 
   const [now, setNow] = useState(Date.now());
@@ -46,7 +48,8 @@ export function PlotCell({ plot }: PlotCellProps) {
   const handleTap = useCallback(() => {
     if (plot.state === 'empty') {
       const ok = plantSeed(plot.id);
-      if (!ok && seeds === 0) {
+      if (ok) { if (sound) playPlant(); }
+      else if (seeds === 0) {
         useGameStore.setState({ notification: 'No seeds left! Buy some in the shop.' });
       }
     } else if (plot.state === 'growing') {
@@ -56,6 +59,7 @@ export function PlotCell({ plot }: PlotCellProps) {
       }
       const ok = waterPlotAct(plot.id);
       if (ok) {
+        if (sound) playWater();
         setBurst('watered');
         setTimeout(() => setBurst(null), 500);
       } else {
@@ -63,10 +67,12 @@ export function PlotCell({ plot }: PlotCellProps) {
       }
     } else if (plot.state === 'ready') {
       setBurst('hatching');
+      if (sound) playHatch();
       setTimeout(() => {
         setBurst(null);
         const result = hatchFn(plot.id);
         if (result) {
+          if (result.bonus > 0 && sound) playCoin();
           const sparkleTag = result.sparkle ? '✨ Sparkle ' : '';
           const newTag = result.isNewNormal ? ' New discovery! +🪙' : '';
           const sparkleNewTag = result.isNewSparkle ? ' ✨ New Sparkle! +🪙' : '';
@@ -76,7 +82,7 @@ export function PlotCell({ plot }: PlotCellProps) {
         }
       }, reducedMotion ? 0 : 600);
     }
-  }, [plot, plantSeed, waterPlotAct, hatchFn, seeds, waterCooldown, reducedMotion]);
+  }, [plot, plantSeed, waterPlotAct, hatchFn, seeds, waterCooldown, reducedMotion, sound]);
 
   const progress =
     plot.state === 'growing' && plot.plantedAt && plot.growMs

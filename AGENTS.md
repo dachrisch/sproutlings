@@ -22,15 +22,17 @@ src/
 │   └── gameStore.ts   # Zustand store with autosave
 ├── data/
 │   └── species.ts     # 16-creature roster
+├── audio.ts           # Web Audio API sound effects (plant, water, hatch, coin, discovery)
 ├── components/
-│   ├── TopBar.tsx     # Stats + tab navigation
+│   ├── TopBar.tsx     # Stats + tab navigation + settings (sound, gentle mode, reset)
 │   ├── Garden.tsx     # Plot grid + meadow
 │   ├── Collection.tsx # Dex grid with discovered/undiscovered
 │   ├── Shop.tsx       # Buyable items (seed, plot, luck, hats)
-│   ├── PlotCell.tsx   # Individual plot (empty/growing/ready)
+│   ├── PlotCell.tsx   # Individual plot (empty/growing/ready) with animations
 │   ├── Meadow.tsx     # Creature strip with hat cycling
-│   └── Creature.tsx   # Procedural SVG creature renderer
-├── App.tsx            # Tab shell + tick loop + offline sim
+│   ├── Creature.tsx   # Procedural SVG creature renderer
+│   └── Confetti.tsx   # Confetti celebration particles
+├── App.tsx            # Tab shell + tick loop + offline sim + sound
 ├── main.tsx           # Entry point
 └── index.css          # Global styles
 ```
@@ -42,7 +44,7 @@ src/
 ## Milestone status
 - ✅ **Phase 0 — Scaffold** (complete): Vite+React+TS project, Zustand store, storage.ts, tab shell, constants, species data, production build.
 - ✅ **Phase 1 — MVP core loop** (complete): plots (plant/water/hatch), meadow coin accrual, economy (seeds, plots, luck, hats), dex discovery, offline sim, procedural SVG creatures, autosave.
-- ⬜ **Phase 2 — Collection & polish** (next)**
+- ✅ **Phase 2 — Collection & polish** (complete): full 16 roster, dex silhouettes + sparkle badges + progress bar + completion celebration, hats + hat-box shop + tap-to-cycle, luck upgrades, hatch pop animation + confetti + water splash + creature idle bob, Web Audio API sound effects (plant/water/hatch/discovery/complete/purchase/welcome), settings panel (sound toggle, gentle mode, new game reset), phone-first responsive, keyboard focus, `prefers-reduced-motion`.
 - ⬜ **Phase 3 — Stretch goals**
 
 ## Key conventions

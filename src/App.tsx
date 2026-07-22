@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useGameStore } from './store/gameStore';
+import { playDiscovery, playComplete, playWelcome } from './audio';
 import { TopBar } from './components/TopBar';
 import { Garden } from './components/Garden';
 import { Collection } from './components/Collection';
@@ -10,15 +11,21 @@ export default function App() {
   const tab = useGameStore((s) => s.tab);
   const notification = useGameStore((s) => s.notification);
   const celebration = useGameStore((s) => s.celebration);
+  const sound = useGameStore((s) => s.settings.sound);
   const clearNotification = useGameStore((s) => s.clearNotification);
   const notifTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const welcomePlayed = useRef(false);
 
   useEffect(() => {
     const msg: string | null = (useGameStore.getState().processOffline as () => string | null)();
     if (msg) {
       useGameStore.setState({ notification: msg });
+      if (!welcomePlayed.current && sound) {
+        playWelcome();
+        welcomePlayed.current = true;
+      }
     }
-  }, []);
+  }, [sound]);
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -36,6 +43,13 @@ export default function App() {
       if (notifTimer.current) clearTimeout(notifTimer.current);
     };
   }, [notification, clearNotification]);
+
+  useEffect(() => {
+    if (celebration && sound) {
+      if (celebration.type === 'complete') playComplete();
+      else playDiscovery();
+    }
+  }, [celebration, sound]);
 
   return (
     <div className="app">

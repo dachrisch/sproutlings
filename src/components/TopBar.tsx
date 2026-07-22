@@ -18,7 +18,9 @@ export function TopBar() {
   const reducedMotion = useGameStore((s) => s.settings.reducedMotion);
   const toggleSound = useGameStore((s) => s.toggleSound);
   const toggleReducedMotion = useGameStore((s) => s.toggleReducedMotion);
+  const resetGame = useGameStore((s) => s.resetGame);
   const [showSettings, setShowSettings] = useState(false);
+  const [confirmReset, setConfirmReset] = useState(false);
 
   const found = Object.values(dex).filter((e) => e.normal).length;
   const total = 16;
@@ -31,7 +33,7 @@ export function TopBar() {
         <span className="stat">📋 {found}/{total}</span>
         <button
           className="settings-btn"
-          onClick={() => setShowSettings(!showSettings)}
+          onClick={() => { setShowSettings(!showSettings); setConfirmReset(false); }}
           type="button"
           aria-label="Settings"
         >
@@ -61,6 +63,18 @@ export function TopBar() {
               {reducedMotion ? 'ON' : 'OFF'}
             </button>
           </label>
+          <div className="setting-divider" />
+          {confirmReset ? (
+            <div className="setting-row reset-confirm">
+              <span>Reset everything?</span>
+              <button className="toggle reset-yes" onClick={() => { resetGame(); setConfirmReset(false); setShowSettings(false); }} type="button">Yes</button>
+              <button className="toggle reset-no" onClick={() => setConfirmReset(false)} type="button">No</button>
+            </div>
+          ) : (
+            <button className="setting-row reset-btn" onClick={() => setConfirmReset(true)} type="button">
+              New game
+            </button>
+          )}
         </div>
       )}
 
