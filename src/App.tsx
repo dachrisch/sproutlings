@@ -2,8 +2,8 @@ import { useEffect, useRef } from 'react';
 import { useGameStore } from './store/gameStore';
 import { playDiscovery, playComplete, playWelcome } from './audio';
 import { TopBar } from './components/TopBar';
-import { Garden } from './components/Garden';
-import { Nursery } from './components/Nursery';
+import { Zoo } from './components/Zoo';
+import { ExpeditionPost } from './components/ExpeditionPost';
 import { Collection } from './components/Collection';
 import { Shop } from './components/Shop';
 import { Confetti } from './components/Confetti';
@@ -56,8 +56,8 @@ export default function App() {
     <div className="app">
       <TopBar />
       <main className="main">
-        {tab === 'garden' && <Garden />}
-        {tab === 'nursery' && <Nursery />}
+        {tab === 'zoo' && <Zoo />}
+        {tab === 'expeditions' && <ExpeditionPost />}
         {tab === 'collection' && <Collection />}
         {tab === 'shop' && <Shop />}
       </main>
@@ -68,7 +68,7 @@ export default function App() {
       )}
       {celebration && (
         <Confetti
-          type={celebration.type === 'stageup' || celebration.type === 'newform' ? 'new' : celebration.type}
+          type={celebration.type}
           onDone={() => useGameStore.setState({ celebration: null })}
         />
       )}

@@ -36,14 +36,6 @@ describe('species data', () => {
       expect(s.hue).toBeLessThan(360);
     }
   });
-
-  it('every species has forms', () => {
-    for (const s of SPECIES) {
-      expect(s.forms.sturdy).toBeDefined();
-      expect(s.forms.sleek).toBeDefined();
-      expect(s.forms.cheerful).toBeDefined();
-    }
-  });
 });
 
 describe('SPECIES_MAP', () => {

@@ -3,16 +3,16 @@ import { useGameStore } from '../store/gameStore';
 import { SPECIES } from '../data/species';
 import type { Tab } from '../types';
 
-const tabs: { id: Tab; label: string }[] = [
-  { id: 'garden',     label: 'Garden' },
-  { id: 'nursery',    label: 'Nursery' },
-  { id: 'collection', label: 'Collection' },
-  { id: 'shop',       label: 'Shop' },
+const tabs: { id: Tab; label: string; icon: string }[] = [
+  { id: 'zoo',         label: 'Zoo',         icon: '🏠' },
+  { id: 'expeditions', label: 'Expeditions',  icon: '🗺️' },
+  { id: 'collection',  label: 'Collection',   icon: '📋' },
+  { id: 'shop',        label: 'Shop',         icon: '🏪' },
 ];
 
 export function TopBar() {
   const coins = useGameStore((s) => s.coins);
-  const seeds = useGameStore((s) => s.seeds);
+  const creatures = useGameStore((s) => s.creatures);
   const dex = useGameStore((s) => s.dex);
   const tab = useGameStore((s) => s.tab);
   const setTab = useGameStore((s) => s.setTab);
@@ -31,7 +31,7 @@ export function TopBar() {
     <header className="topbar">
       <div className="topbar-stats">
         <span className="stat">🪙 {Math.floor(coins)}</span>
-        <span className="stat">🌱 {seeds}</span>
+        <span className="stat">🐾 {creatures.length}</span>
         <span className="stat">📋 {found}/{total}</span>
         <button
           className="settings-btn"
@@ -87,7 +87,7 @@ export function TopBar() {
             className={`tab ${tab === t.id ? 'active' : ''}`}
             onClick={() => setTab(t.id)}
           >
-            {t.label}
+            {t.icon} {t.label}
           </button>
         ))}
       </nav>

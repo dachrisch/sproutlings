@@ -1,26 +1,24 @@
 import { describe, it, expect } from 'vitest';
 import {
-  plotPrice, luckUpgradePrice, PLOT_CAP, LUCK_LEVEL_CAP,
-  SEED_PRICE, HAT_BOX_PRICE, SPARKLE_BASE_CHANCE, SPARKLE_PER_LUCK_LEVEL,
-  SPARKLE_CHANCE_CAP, STARTING_COINS, STARTING_SEEDS, STARTING_PLOTS,
+  slotPrice, luckUpgradePrice, SLOT_CAP, LUCK_LEVEL_CAP,
+  EXPEDITION_COST, HAT_BOX_PRICE, SPARKLE_BASE_CHANCE, SPARKLE_PER_LUCK_LEVEL,
+  SPARKLE_CHANCE_CAP, STARTING_COINS, STARTING_SLOTS,
   OFFLINE_ACCRUAL_CAP_MS, NEW_SPECIES_BONUS, RARITY_WEIGHTS, HATS,
 } from '../constants';
 
 describe('starting values', () => {
   it('starts with 25 coins', () => expect(STARTING_COINS).toBe(25));
-  it('starts with 4 seeds', () => expect(STARTING_SEEDS).toBe(4));
-  it('starts with 3 plots', () => expect(STARTING_PLOTS).toBe(3));
+  it('starts with 2 slots', () => expect(STARTING_SLOTS).toBe(2));
 });
 
-describe('plotPrice', () => {
-  it('returns 40 for the 4th plot', () => expect(plotPrice(3)).toBe(40));
-  it('returns 80 for the 5th plot', () => expect(plotPrice(4)).toBe(80));
-  it('returns 160 for the 6th plot', () => expect(plotPrice(5)).toBe(160));
-  it('returns 320 for the 7th plot', () => expect(plotPrice(6)).toBe(320));
-  it('returns 640 for the 8th plot', () => expect(plotPrice(7)).toBe(640));
-  it('doubles each step after the 4th plot', () => {
-    expect(plotPrice(4)).toBe(plotPrice(3) * 2);
-    expect(plotPrice(5)).toBe(plotPrice(4) * 2);
+describe('slotPrice', () => {
+  it('returns 40 for the 3rd slot', () => expect(slotPrice(2)).toBe(40));
+  it('returns 80 for the 4th slot', () => expect(slotPrice(3)).toBe(80));
+  it('returns 160 for the 5th slot', () => expect(slotPrice(4)).toBe(160));
+  it('returns 320 for the 6th slot', () => expect(slotPrice(5)).toBe(320));
+  it('doubles each step after the 3rd slot', () => {
+    expect(slotPrice(3)).toBe(slotPrice(2) * 2);
+    expect(slotPrice(4)).toBe(slotPrice(3) * 2);
   });
 });
 
@@ -35,13 +33,13 @@ describe('luckUpgradePrice', () => {
 });
 
 describe('caps', () => {
-  it('plot cap is 8', () => expect(PLOT_CAP).toBe(8));
+  it('slot cap is 6', () => expect(SLOT_CAP).toBe(6));
   it('luck level cap is 10', () => expect(LUCK_LEVEL_CAP).toBe(10));
   it('offline cap is 8 hours', () => expect(OFFLINE_ACCRUAL_CAP_MS).toBe(8 * 60 * 60 * 1000));
 });
 
 describe('prices', () => {
-  it('seed price is 8', () => expect(SEED_PRICE).toBe(8));
+  it('expedition cost is 8', () => expect(EXPEDITION_COST).toBe(8));
   it('hat box price is 45', () => expect(HAT_BOX_PRICE).toBe(45));
   it('new species bonus is 10', () => expect(NEW_SPECIES_BONUS).toBe(10));
 });

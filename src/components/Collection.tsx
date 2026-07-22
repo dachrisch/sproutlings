@@ -1,11 +1,10 @@
 import { useGameStore } from '../store/gameStore';
 import { SPECIES } from '../data/species';
 import { CreatureSVG } from './Creature';
-import type { Shape, Track } from '../types';
+import type { Shape } from '../types';
 
 function Silhouette({ hue, shape }: { hue: number; shape: Shape }) {
   const muted = `hsl(${hue}, 15%, 75%)`;
-  const darker = `hsl(${hue}, 15%, 60%)`;
 
   switch (shape) {
     case 'eared':
@@ -20,14 +19,14 @@ function Silhouette({ hue, shape }: { hue: number; shape: Shape }) {
       return (
         <svg width="40" height="40" viewBox="0 0 100 100">
           <ellipse cx="50" cy="42" rx="28" ry="14" fill={muted} />
-          <ellipse cx="50" cy="66" rx="18" ry="16" fill={darker} />
+          <ellipse cx="50" cy="66" rx="18" ry="16" fill={`hsl(${hue}, 15%, 60%)`} />
         </svg>
       );
     case 'horned':
       return (
         <svg width="40" height="40" viewBox="0 0 100 100">
-          <path d="M35,40 L20,18 L42,36" fill={darker} />
-          <path d="M65,40 L80,18 L58,36" fill={darker} />
+          <path d="M35,40 L20,18 L42,36" fill={`hsl(${hue}, 15%, 60%)`} />
+          <path d="M65,40 L80,18 L58,36" fill={`hsl(${hue}, 15%, 60%)`} />
           <circle cx="50" cy="58" r="24" fill={muted} />
         </svg>
       );
@@ -40,7 +39,7 @@ function Silhouette({ hue, shape }: { hue: number; shape: Shape }) {
       return (
         <svg width="40" height="40" viewBox="0 0 100 100">
           <polygon points={pts.join(' ')} fill={muted} />
-          <circle cx="50" cy="56" r="18" fill={darker} />
+          <circle cx="50" cy="56" r="18" fill={`hsl(${hue}, 15%, 60%)`} />
         </svg>
       );
     }
@@ -62,7 +61,7 @@ function Silhouette({ hue, shape }: { hue: number; shape: Shape }) {
       return (
         <svg width="40" height="40" viewBox="0 0 100 100">
           <ellipse cx="50" cy="54" rx="20" ry="28" fill={muted} />
-          <polygon points="40,30 50,18 60,30" fill={darker} />
+          <polygon points="40,30 50,18 60,30" fill={`hsl(${hue}, 15%, 60%)`} />
         </svg>
       );
     case 'cloud':
@@ -71,8 +70,8 @@ function Silhouette({ hue, shape }: { hue: number; shape: Shape }) {
           <circle cx="36" cy="58" r="14" fill={muted} />
           <circle cx="64" cy="58" r="14" fill={muted} />
           <circle cx="50" cy="48" r="16" fill={muted} />
-          <circle cx="40" cy="46" r="10" fill={darker} />
-          <circle cx="60" cy="46" r="10" fill={darker} />
+          <circle cx="40" cy="46" r="10" fill={`hsl(${hue}, 15%, 60%)`} />
+          <circle cx="60" cy="46" r="10" fill={`hsl(${hue}, 15%, 60%)`} />
         </svg>
       );
     case 'stone':
@@ -85,8 +84,8 @@ function Silhouette({ hue, shape }: { hue: number; shape: Shape }) {
       return (
         <svg width="40" height="40" viewBox="0 0 100 100">
           <circle cx="50" cy="62" r="18" fill={muted} />
-          <ellipse cx="45" cy="36" rx="5" ry="3" fill={darker} transform="rotate(-30 45 36)" />
-          <ellipse cx="55" cy="38" rx="5" ry="3" fill={darker} transform="rotate(20 55 38)" />
+          <ellipse cx="45" cy="36" rx="5" ry="3" fill={`hsl(${hue}, 15%, 60%)`} transform="rotate(-30 45 36)" />
+          <ellipse cx="55" cy="38" rx="5" ry="3" fill={`hsl(${hue}, 15%, 60%)`} transform="rotate(20 55 38)" />
         </svg>
       );
     case 'blob':
@@ -100,12 +99,6 @@ function Silhouette({ hue, shape }: { hue: number; shape: Shape }) {
   }
 }
 
-const TRACK_ICON: Record<Track, string> = {
-  sturdy: '🛡️',
-  sleek: '💨',
-  cheerful: '⭐',
-};
-
 export function Collection() {
   const dex = useGameStore((s) => s.dex);
   const found = Object.values(dex).filter((e) => e.normal).length;
@@ -113,10 +106,6 @@ export function Collection() {
   const pct = Math.round((found / total) * 100);
 
   const sparklesFound = Object.values(dex).filter((e) => e.sparkle).length;
-
-  const formsCount = Object.values(dex).reduce((sum, e) => sum + e.formsRaised.length, 0);
-  const totalForms = SPECIES.length * 3;
-  const formsPct = Math.round((formsCount / totalForms) * 100);
 
   return (
     <section className="view collection-view">
@@ -130,14 +119,6 @@ export function Collection() {
         </div>
       </div>
 
-      <div className="dex-progress-section">
-        <span className="dex-progress-label">Adult forms raised</span>
-        <div className="dex-progress-bar">
-          <div className="dex-progress-fill forms-fill" style={{ width: `${formsPct}%` }} />
-          <span className="dex-progress-text">{formsCount} / {totalForms}</span>
-        </div>
-      </div>
-
       {found === total && (
         <p className="dex-complete">You found them all! ⭐</p>
       )}
@@ -148,7 +129,6 @@ export function Collection() {
         {SPECIES.map((species) => {
           const entry = dex[species.id];
           const discovered = !!entry?.normal;
-          const raisedTracks = entry?.formsRaised ?? [];
           return (
             <div key={species.id} className={`dex-cell ${discovered ? 'discovered' : 'unknown'}`}>
               {discovered ? (
@@ -161,19 +141,6 @@ export function Collection() {
               <span className="dex-name">{discovered ? species.name : '???'}</span>
               {discovered && (
                 <span className={`dex-rarity ${species.rarity}`}>{species.rarity}</span>
-              )}
-              {discovered && (
-                <div className="dex-tracks">
-                  {(['sturdy', 'sleek', 'cheerful'] as Track[]).map((t) => (
-                    <span
-                      key={t}
-                      className={`dex-track-dot ${raisedTracks.includes(t) ? 'raised' : 'unraised'}`}
-                      title={species.forms[t]?.label ?? t}
-                    >
-                      {raisedTracks.includes(t) ? TRACK_ICON[t] : '○'}
-                    </span>
-                  ))}
-                </div>
               )}
               {entry?.sparkle && <span className="dex-sparkle-badge">✨</span>}
               {discovered && !entry?.sparkle && <span className="dex-sparkle-empty" />}

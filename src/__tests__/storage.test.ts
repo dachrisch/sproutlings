@@ -8,21 +8,17 @@ const mockState: GameState = {
   createdAt: 1000,
   lastUpdate: 2000,
   coins: 50,
-  seeds: 2,
-  plotCount: 4,
+  expeditionSlots: [
+    { id: 0, state: 'idle' },
+    { id: 1, state: 'exploring', startedAt: 1500, durationMs: 30000 },
+  ],
+  slotCount: 2,
   luckLevel: 1,
   ownedHats: ['crown'],
-  plots: [
-    { id: 0, state: 'empty' },
-    { id: 1, state: 'growing', plantedAt: 1500, growMs: 30_000 },
-    { id: 2, state: 'ready' },
-    { id: 3, state: 'empty' },
-  ],
-  inventory: { food: 0, toys: 0 },
   creatures: [
-    { uid: 'c1', speciesId: 'mossling', sparkle: false, hat: null, stage: 'baby', track: null, stats: { vigor: 0, zip: 0, bond: 0 }, fullness: 100, energy: 100, location: 'nursery', cooldowns: {} },
+    { uid: 'c1', speciesId: 'mossling', sparkle: false, hat: null },
   ],
-  dex: { mossling: { normal: true, sparkle: false, formsRaised: [] } },
+  dex: { mossling: { normal: true, sparkle: false } },
   settings: { reducedMotion: false, sound: true },
 };
 
@@ -36,8 +32,7 @@ describe('save and load', () => {
     const loaded = load();
     expect(loaded).not.toBeNull();
     expect(loaded!.coins).toBe(50);
-    expect(loaded!.seeds).toBe(2);
-    expect(loaded!.plotCount).toBe(4);
+    expect(loaded!.slotCount).toBe(2);
   });
 
   it('returns null when no save exists', () => {
@@ -47,8 +42,8 @@ describe('save and load', () => {
   it('preserves nested data', () => {
     save(mockState);
     const loaded = load()!;
-    expect(loaded.plots).toHaveLength(4);
-    expect(loaded.plots[1].state).toBe('growing');
+    expect(loaded.expeditionSlots).toHaveLength(2);
+    expect(loaded.expeditionSlots[1].state).toBe('exploring');
     expect(loaded.creatures).toHaveLength(1);
     expect(loaded.dex.mossling.normal).toBe(true);
   });

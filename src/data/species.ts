@@ -1,10 +1,4 @@
-import type { Species, Rarity, Track } from '../types';
-
-const TRACKS: Record<Track, { hueShift: number; label: string }> = {
-  sturdy: { hueShift: 0, label: 'Sturdy' },
-  sleek: { hueShift: -20, label: 'Sleek' },
-  cheerful: { hueShift: 20, label: 'Cheerful' },
-};
+import type { Species, Rarity } from '../types';
 
 const speciesData: { id: string; name: string; rarity: Rarity; shape: Species['shape']; hue: number }[] = [
   { id: 'mossling',  name: 'Mossling',  rarity: 'common',    shape: 'blob',     hue: 110 },
@@ -25,10 +19,7 @@ const speciesData: { id: string; name: string; rarity: Rarity; shape: Species['s
   { id: 'nimbus',    name: 'Nimbus',    rarity: 'legendary', shape: 'cloud',    hue: 210 },
 ];
 
-export const SPECIES: Species[] = speciesData.map((s) => ({
-  ...s,
-  forms: { ...TRACKS },
-}));
+export const SPECIES: Species[] = speciesData.map((s) => ({ ...s }));
 
 export const SPECIES_MAP: Record<string, Species> = Object.fromEntries(
   SPECIES.map((s) => [s.id, s])
