@@ -14,11 +14,14 @@ import { load, save } from '../storage';
 export interface HatchResult {
   creature: OwnedCreature;
   speciesName: string;
+  speciesId: string;
   isNewNormal: boolean;
   isNewSparkle: boolean;
   bonus: number;
   sparkle: boolean;
 }
+
+type Celebration = { type: 'new' | 'sparkle' | 'complete' };
 
 function freshGame(): GameState {
   const now = Date.now();
@@ -62,16 +65,19 @@ function rollSparkle(luckLevel: number): boolean {
 export interface GameStore extends GameState {
   tab: Tab;
   notification: string | null;
+  celebration: Celebration | null;
   setTab: (tab: Tab) => void;
   resetGame: () => void;
   clearNotification: () => void;
+  toggleSound: () => void;
+  toggleReducedMotion: () => void;
   plantSeed: (plotId: number) => boolean;
   waterPlot: (plotId: number) => boolean;
   hatchPlot: (plotId: number) => HatchResult | null;
   buySeeds: () => boolean;
   buyPlot: () => boolean;
   buyLuckUpgrade: () => boolean;
-  buyHatBox: () => boolean;
+  buyHatBox: () => string | null;
   tick: () => void;
   processOffline: () => string | null;
 }
@@ -82,9 +88,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
   ...initial,
   tab: 'garden',
   notification: null,
+  celebration: null,
 
   setTab: (tab) => set({ tab }),
-  clearNotification: () => set({ notification: null }),
+  clearNotification: () => set({ notification: null, celebration: null }),
+  toggleSound: () =>
+    set((s) => ({ settings: { ...s.settings, sound: !s.settings.sound } })),
+  toggleReducedMotion: () =>
+    set((s) => ({ settings: { ...s.settings, reducedMotion: !s.settings.reducedMotion } })),
   resetGame: () => {
     const fresh = freshGame();
     set(fresh as unknown as GameStore);
@@ -147,8 +158,21 @@ export const useGameStore = create<GameStore>((set, get) => ({
       [species.id]: { normal: true, sparkle: prev?.sparkle || sparkle },
     };
     let bonus = 0;
-    if (isNewNormal) bonus += NEW_SPECIES_BONUS;
-    if (isNewSparkle) bonus += NEW_SPECIES_BONUS;
+    let celebration: Celebration | null = null;
+    if (isNewNormal) {
+      bonus += NEW_SPECIES_BONUS;
+      celebration = { type: 'new' };
+    }
+    if (isNewSparkle) {
+      bonus += NEW_SPECIES_BONUS;
+      celebration = { type: 'sparkle' };
+    }
+    const allFound = SPECIES_BY_RARITY.common.length + SPECIES_BY_RARITY.uncommon.length +
+      SPECIES_BY_RARITY.rare.length + SPECIES_BY_RARITY.legendary.length;
+    const newFoundCount = Object.values(newDex).filter((e) => e.normal).length;
+    if (newFoundCount >= allFound && Object.values(s.dex).filter((e) => e.normal).length < allFound) {
+      celebration = { type: 'complete' };
+    }
 
     set({
       plots: s.plots.map((p) => (p.id === plotId ? { id: p.id, state: 'empty' } : p)),
@@ -156,16 +180,17 @@ export const useGameStore = create<GameStore>((set, get) => ({
       dex: newDex,
       coins: s.coins + bonus,
       lastUpdate: Date.now(),
+      celebration,
     });
-    const result: HatchResult = {
+    return {
       creature,
       speciesName: species.name,
+      speciesId: species.id,
       isNewNormal,
       isNewSparkle,
       bonus,
       sparkle,
     };
-    return result;
   },
 
   buySeeds: () => {
@@ -200,16 +225,16 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   buyHatBox: () => {
     const s = get();
-    if (s.ownedHats.length >= HATS.length) return false;
-    if (s.coins < HAT_BOX_PRICE) return false;
+    if (s.ownedHats.length >= HATS.length) return null;
+    if (s.coins < HAT_BOX_PRICE) return null;
     const remaining = HATS.filter((h) => !s.ownedHats.includes(h));
     const hat = remaining[0];
-    if (!hat) return false;
+    if (!hat) return null;
     set({
       coins: s.coins - HAT_BOX_PRICE,
       ownedHats: [...s.ownedHats, hat],
     });
-    return true;
+    return hat;
   },
 
   tick: () => {

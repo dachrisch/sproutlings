@@ -5,6 +5,7 @@ interface CreatureSVGProps {
   sparkle?: boolean;
   hat?: string | null;
   size?: number;
+  animate?: boolean;
 }
 
 function bodyPath(shape: string, hue: number): { path: JSX.Element; faceY: number } {
@@ -38,17 +39,18 @@ function bodyPath(shape: string, hue: number): { path: JSX.Element; faceY: numbe
     }
     case 'sprout': {
       base.push(
-        <circle key="body" cx="50" cy="60" r="20" fill={fill} />,
-        <path key="leaf_l" d="M46,42 Q30,25 44,38" fill={`hsl(${hue + 30}, 60%, 50%)`} />,
-        <path key="leaf_r" d="M54,42 Q70,25 56,38" fill={`hsl(${hue + 30}, 60%, 50%)`} />,
+        <circle key="body" cx="50" cy="62" r="20" fill={fill} />,
+        <path key="stem" d="M50,44 Q50,28 54,24" fill="none" stroke={`hsl(${hue + 30}, 60%, 40%)`} strokeWidth="2" />,
+        <ellipse key="leaf_l" cx="44" cy="32" rx="6" ry="3" fill={`hsl(${hue + 30}, 60%, 50%)`} transform="rotate(-30 44 32)" />,
+        <ellipse key="leaf_r" cx="56" cy="34" rx="6" ry="3" fill={`hsl(${hue + 30}, 60%, 50%)`} transform="rotate(20 56 34)" />,
       );
-      return { path: <g>{base}</g>, faceY: 58 };
+      return { path: <g>{base}</g>, faceY: 60 };
     }
     case 'horned': {
       base.push(
-        <path key="horn_l" d="M35,38 L22,18 L40,34" fill={darker} />,
-        <path key="horn_r" d="M65,38 L78,18 L60,34" fill={darker} />,
-        <circle key="body" cx="50" cy="58" r="22" fill={fill} />,
+        <path key="horn_l" d="M35,40 L20,18 L42,36" fill={darker} />,
+        <path key="horn_r" d="M65,40 L80,18 L58,36" fill={darker} />,
+        <circle key="body" cx="50" cy="58" r="24" fill={fill} />,
       );
       return { path: <g>{base}</g>, faceY: 56 };
     }
@@ -58,10 +60,10 @@ function bodyPath(shape: string, hue: number): { path: JSX.Element; faceY: numbe
         const angle = (i / 8) * Math.PI * 2;
         const x1 = 50 + 20 * Math.cos(angle);
         const y1 = 56 + 20 * Math.sin(angle);
-        const x2 = 50 + 30 * Math.cos(angle - 0.2);
-        const y2 = 56 + 30 * Math.sin(angle - 0.2);
-        const x3 = 50 + 30 * Math.cos(angle + 0.2);
-        const y3 = 56 + 30 * Math.sin(angle + 0.2);
+        const x2 = 50 + 32 * Math.cos(angle - 0.25);
+        const y2 = 56 + 32 * Math.sin(angle - 0.25);
+        const x3 = 50 + 32 * Math.cos(angle + 0.25);
+        const y3 = 56 + 32 * Math.sin(angle + 0.25);
         spikes.push(
           <polygon key={`spike_${i}`} points={`${x1},${y1} ${x2},${y2} ${x3},${y3}`} fill={darker} />,
         );
@@ -78,28 +80,29 @@ function bodyPath(shape: string, hue: number): { path: JSX.Element; faceY: numbe
         pts.push(`${50 + 14 * Math.cos(innerAngle)},${56 + 14 * Math.sin(innerAngle)}`);
       }
       base.push(<polygon key="body" points={pts.join(' ')} fill={fill} />);
-      return { path: <g>{base}</g>, faceY: 54 };
+      return { path: <g>{base}</g>, faceY: 52 };
     }
     case 'tall': {
       base.push(
-        <ellipse key="body" cx="50" cy="52" rx="22" ry="30" fill={fill} />,
-        <ellipse key="crown" cx="50" cy="22" rx="10" ry="6" fill={darker} />,
+        <ellipse key="body" cx="50" cy="54" rx="24" ry="32" fill={fill} />,
+        <polygon key="crown" points="38,26 50,14 62,26" fill={darker} />,
+        <circle key="crown_jewel" cx="50" cy="22" r="3" fill="#f5b342" />,
       );
-      return { path: <g>{base}</g>, faceY: 52 };
+      return { path: <g>{base}</g>, faceY: 54 };
     }
     case 'cloud': {
       base.push(
-        <circle key="c1" cx="36" cy="58" r="16" fill={fill} />,
-        <circle key="c2" cx="64" cy="58" r="16" fill={fill} />,
+        <circle key="c1" cx="34" cy="60" r="16" fill={fill} />,
+        <circle key="c2" cx="66" cy="60" r="16" fill={fill} />,
         <circle key="c3" cx="50" cy="48" r="18" fill={lighter} />,
-        <circle key="c4" cx="38" cy="46" r="12" fill={lighter} />,
-        <circle key="c5" cx="62" cy="46" r="12" fill={lighter} />,
+        <circle key="c4" cx="38" cy="44" r="12" fill={lighter} />,
+        <circle key="c5" cx="62" cy="44" r="12" fill={lighter} />,
       );
       return { path: <g>{base}</g>, faceY: 56 };
     }
     case 'stone': {
       base.push(
-        <path key="body" d="M28,60 Q25,40 38,32 Q50,26 62,32 Q75,40 72,60 Q70,74 50,76 Q30,74 28,60Z" fill={fill} />,
+        <path key="body" d="M28,60 Q25,38 38,30 Q50,24 62,30 Q75,38 72,60 Q70,76 50,78 Q30,76 28,60Z" fill={fill} />,
       );
       return { path: <g>{base}</g>, faceY: 58 };
     }
@@ -125,9 +128,10 @@ function Face({ y }: { y: number }) {
 function SparkleOverlay() {
   return (
     <g>
-      <text x="78" y="20" fontSize="14" fill="white" textAnchor="middle">✦</text>
-      <text x="22" y="18" fontSize="10" fill="white" textAnchor="middle">✦</text>
-      <text x="85" y="80" fontSize="8" fill="white" textAnchor="middle">✦</text>
+      <text x="80" y="22" fontSize="14" fill="white" textAnchor="middle" fontWeight="bold">✦</text>
+      <text x="20" y="18" fontSize="10" fill="white" textAnchor="middle" fontWeight="bold">✦</text>
+      <text x="88" y="82" fontSize="8" fill="white" textAnchor="middle" fontWeight="bold">✦</text>
+      <text x="12" y="80" fontSize="8" fill="white" textAnchor="middle" fontWeight="bold">✦</text>
     </g>
   );
 }
@@ -137,38 +141,41 @@ function HatOverlay({ hat }: { hat: string }) {
     case 'crown':
       return (
         <g>
-          <path d="M38,28 L36,16 L44,22 L50,12 L56,22 L64,16 L62,28Z" fill="#f5b342" stroke="#d4942f" strokeWidth="1" />
+          <path d="M38,28 L36,14 L44,22 L50,10 L56,22 L64,14 L62,28Z" fill="#f5b342" stroke="#d4942f" strokeWidth="1" />
           <rect x="37" y="28" width="26" height="4" rx="2" fill="#f5b342" />
         </g>
       );
     case 'flower':
       return (
         <g>
-          <circle cx="50" cy="22" r="8" fill="#ff69b4" />
-          <circle cx="50" cy="22" r="3" fill="#ffd700" />
-          <line x1="50" y1="30" x2="50" y2="38" stroke="#4a9f4a" strokeWidth="2" />
+          <circle cx="50" cy="20" r="9" fill="#ff69b4" />
+          <circle cx="46" cy="17" r="5" fill="#ff99cc" />
+          <circle cx="54" cy="17" r="5" fill="#ff99cc" />
+          <circle cx="50" cy="20" r="3" fill="#ffd700" />
+          <line x1="50" y1="29" x2="50" y2="38" stroke="#4a9f4a" strokeWidth="2" />
         </g>
       );
     case 'bow':
       return (
         <g>
-          <polygon points="42,32 30,24 30,40" fill="#ff6b9d" />
-          <polygon points="58,32 70,24 70,40" fill="#ff6b9d" />
-          <circle cx="50" cy="32" r="4" fill="#ff4081" />
+          <polygon points="42,32 28,22 28,42" fill="#ff6b9d" />
+          <polygon points="58,32 72,22 72,42" fill="#ff6b9d" />
+          <circle cx="50" cy="32" r="5" fill="#ff4081" />
         </g>
       );
     case 'tophat':
       return (
         <g>
-          <rect x="36" y="18" width="28" height="20" rx="2" fill="#2c2c2c" />
-          <rect x="32" y="36" width="36" height="4" rx="2" fill="#2c2c2c" />
+          <rect x="34" y="16" width="32" height="22" rx="3" fill="#2c2c2c" />
+          <rect x="30" y="36" width="40" height="4" rx="2" fill="#2c2c2c" />
+          <rect x="34" y="16" width="32" height="3" rx="1" fill="#444" />
         </g>
       );
     case 'ribbon':
       return (
         <g>
-          <path d="M30,36 Q50,28 70,36" fill="none" stroke="#ff69b4" strokeWidth="3" />
-          <polygon points="50,36 46,44 54,44" fill="#ff69b4" />
+          <path d="M28,38 Q50,28 72,38" fill="none" stroke="#ff69b4" strokeWidth="3" />
+          <polygon points="50,38 46,48 54,48" fill="#ff69b4" />
         </g>
       );
     default:
@@ -176,13 +183,19 @@ function HatOverlay({ hat }: { hat: string }) {
   }
 }
 
-export function CreatureSVG({ species, sparkle, hat, size = 64 }: CreatureSVGProps) {
+export function CreatureSVG({ species, sparkle, hat, size = 64, animate }: CreatureSVGProps) {
   const hue = sparkle ? (species.hue + 30) % 360 : species.hue;
   const sparkleSpecies = sparkle ? { ...species, hue } : species;
   const { path, faceY } = bodyPath(sparkleSpecies.shape, hue);
 
   return (
-    <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 100 100"
+      xmlns="http://www.w3.org/2000/svg"
+      className={animate ? 'creature-bob' : undefined}
+    >
       {path}
       <Face y={faceY} />
       {sparkle && <SparkleOverlay />}

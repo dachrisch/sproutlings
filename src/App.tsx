@@ -4,10 +4,12 @@ import { TopBar } from './components/TopBar';
 import { Garden } from './components/Garden';
 import { Collection } from './components/Collection';
 import { Shop } from './components/Shop';
+import { Confetti } from './components/Confetti';
 
 export default function App() {
   const tab = useGameStore((s) => s.tab);
   const notification = useGameStore((s) => s.notification);
+  const celebration = useGameStore((s) => s.celebration);
   const clearNotification = useGameStore((s) => s.clearNotification);
   const notifTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -47,6 +49,12 @@ export default function App() {
         <div className="toast" role="alert">
           {notification}
         </div>
+      )}
+      {celebration && (
+        <Confetti
+          type={celebration.type}
+          onDone={() => useGameStore.setState({ celebration: null })}
+        />
       )}
     </div>
   );

@@ -1,7 +1,8 @@
 import { useGameStore } from '../store/gameStore';
 import {
   SEED_PRICE, PLOT_CAP, plotPrice, LUCK_LEVEL_CAP, luckUpgradePrice,
-  HAT_BOX_PRICE, HATS,
+  HAT_BOX_PRICE, HATS, SPARKLE_BASE_CHANCE, SPARKLE_PER_LUCK_LEVEL,
+  SPARKLE_CHANCE_CAP,
 } from '../constants';
 
 export function Shop() {
@@ -20,6 +21,10 @@ export function Shop() {
   const luckCost = luckUpgradePrice(luckLevel);
   const luckMaxed = luckLevel >= LUCK_LEVEL_CAP;
   const hatsAllOwned = ownedHats.length >= HATS.length;
+  const sparkleChance = Math.min(
+    SPARKLE_BASE_CHANCE + luckLevel * SPARKLE_PER_LUCK_LEVEL,
+    SPARKLE_CHANCE_CAP
+  );
 
   return (
     <section className="view shop-view">
@@ -29,9 +34,9 @@ export function Shop() {
       <div className="shop-list">
         <div className={`shop-item ${coins < SEED_PRICE ? 'unaffordable' : ''}`}>
           <div className="shop-info">
-            <span className="shop-name">Seed</span>
+            <span className="shop-name">🌱 Seed</span>
             <span className="shop-desc">Plant in an empty plot</span>
-            <span className="shop-owned">Owned: {seeds}</span>
+            <span className="shop-owned">You have: {seeds}</span>
           </div>
           <div className="shop-action">
             <span className="shop-price">{SEED_PRICE}🪙</span>
@@ -43,42 +48,42 @@ export function Shop() {
 
         <div className={`shop-item ${plotMaxed || coins < plotCost ? 'unaffordable' : ''}`}>
           <div className="shop-info">
-            <span className="shop-name">New Plot</span>
-            <span className="shop-desc">Expand your garden</span>
+            <span className="shop-name">📦 New Plot</span>
+            <span className="shop-desc">More room for planting</span>
             <span className="shop-owned">{plotCount} / {PLOT_CAP}</span>
           </div>
           <div className="shop-action">
             <span className="shop-price">{Math.floor(plotCost)}🪙</span>
             <button className="buy-btn" disabled={plotMaxed || coins < plotCost} onClick={buyPlot} type="button">
-              {plotMaxed ? 'Max' : 'Buy'}
+              {plotMaxed ? 'Full!' : 'Buy'}
             </button>
           </div>
         </div>
 
         <div className={`shop-item ${luckMaxed || coins < luckCost ? 'unaffordable' : ''}`}>
           <div className="shop-info">
-            <span className="shop-name">Luck Upgrade</span>
-            <span className="shop-desc">Boost Sparkle chance</span>
+            <span className="shop-name">🍀 Luck Upgrade</span>
+            <span className="shop-desc">Sparkle chance: {(sparkleChance * 100).toFixed(0)}%</span>
             <span className="shop-owned">Level {luckLevel} / {LUCK_LEVEL_CAP}</span>
           </div>
           <div className="shop-action">
             <span className="shop-price">{Math.floor(luckCost)}🪙</span>
             <button className="buy-btn" disabled={luckMaxed || coins < luckCost} onClick={buyLuckUpgrade} type="button">
-              {luckMaxed ? 'Max' : 'Buy'}
+              {luckMaxed ? 'Maxed!' : 'Buy'}
             </button>
           </div>
         </div>
 
         <div className={`shop-item ${hatsAllOwned || coins < HAT_BOX_PRICE ? 'unaffordable' : ''}`}>
           <div className="shop-info">
-            <span className="shop-name">Hat Box</span>
-            <span className="shop-desc">Unlock a new hat</span>
+            <span className="shop-name">🎩 Hat Box</span>
+            <span className="shop-desc">A surprise hat!</span>
             <span className="shop-owned">{ownedHats.length} / {HATS.length}</span>
           </div>
           <div className="shop-action">
             <span className="shop-price">{HAT_BOX_PRICE}🪙</span>
             <button className="buy-btn" disabled={hatsAllOwned || coins < HAT_BOX_PRICE} onClick={buyHatBox} type="button">
-              {hatsAllOwned ? 'All owned' : 'Buy'}
+              {hatsAllOwned ? 'All done!' : 'Buy'}
             </button>
           </div>
         </div>

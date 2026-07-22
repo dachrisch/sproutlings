@@ -4,6 +4,7 @@ import { CreatureSVG } from './Creature';
 
 export function Meadow() {
   const creatures = useGameStore((s) => s.creatures);
+  const reducedMotion = useGameStore((s) => s.settings.reducedMotion);
   const cycleHat = (uid: string) => {
     const state = useGameStore.getState();
     const creature = state.creatures.find((c) => c.uid === uid);
@@ -19,14 +20,23 @@ export function Meadow() {
   if (creatures.length === 0) {
     return (
       <div className="meadow meadow-empty">
-        <p className="meadow-hint">Hatch an egg above to see your creatures here!</p>
+        <p className="meadow-hint">Hatch an egg to see your creature friends!</p>
       </div>
     );
   }
 
+  const totalRate = creatures.reduce((sum, c) => {
+    const species = SPECIES_MAP[c.speciesId];
+    if (!species) return sum;
+    return sum + species.coinsPerSec * (c.sparkle ? 2 : 1);
+  }, 0);
+
   return (
     <div className="meadow">
-      <h3 className="meadow-title">Meadow ({creatures.length})</h3>
+      <div className="meadow-header">
+        <h3 className="meadow-title">Your creatures</h3>
+        <span className="meadow-rate">+{totalRate.toFixed(1)} 🪙/s</span>
+      </div>
       <div className="meadow-row">
         {creatures.map((c) => {
           const species = SPECIES_MAP[c.speciesId];
@@ -37,8 +47,9 @@ export function Meadow() {
               className="creature-btn"
               onClick={() => cycleHat(c.uid)}
               type="button"
+              title="Tap to change hat"
             >
-              <CreatureSVG species={species} sparkle={c.sparkle} hat={c.hat} size={56} />
+              <CreatureSVG species={species} sparkle={c.sparkle} hat={c.hat} size={56} animate={!reducedMotion} />
             </button>
           );
         })}
