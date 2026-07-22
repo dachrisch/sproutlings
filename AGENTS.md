@@ -24,10 +24,13 @@ src/
 │   └── species.ts     # 16-creature roster
 ├── components/
 │   ├── TopBar.tsx     # Stats + tab navigation
-│   ├── Garden.tsx     # Plot grid + meadow (placeholder)
-│   ├── Collection.tsx # Dex grid (placeholder)
-│   └── Shop.tsx       # Buyable items (placeholder)
-├── App.tsx            # Tab shell
+│   ├── Garden.tsx     # Plot grid + meadow
+│   ├── Collection.tsx # Dex grid with discovered/undiscovered
+│   ├── Shop.tsx       # Buyable items (seed, plot, luck, hats)
+│   ├── PlotCell.tsx   # Individual plot (empty/growing/ready)
+│   ├── Meadow.tsx     # Creature strip with hat cycling
+│   └── Creature.tsx   # Procedural SVG creature renderer
+├── App.tsx            # Tab shell + tick loop + offline sim
 ├── main.tsx           # Entry point
 └── index.css          # Global styles
 ```
@@ -38,8 +41,8 @@ src/
 
 ## Milestone status
 - ✅ **Phase 0 — Scaffold** (complete): Vite+React+TS project, Zustand store, storage.ts, tab shell, constants, species data, production build.
-- ⬜ **Phase 1 — MVP core loop** (next): plots, hatching, meadow accrual, economy, basic shop, dex discovery, autosave, offline sim.
-- ⬜ **Phase 2 — Collection & polish**
+- ✅ **Phase 1 — MVP core loop** (complete): plots (plant/water/hatch), meadow coin accrual, economy (seeds, plots, luck, hats), dex discovery, offline sim, procedural SVG creatures, autosave.
+- ⬜ **Phase 2 — Collection & polish** (next)**
 - ⬜ **Phase 3 — Stretch goals**
 
 ## Key conventions
