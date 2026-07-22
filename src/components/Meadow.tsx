@@ -5,6 +5,9 @@ import { CreatureSVG } from './Creature';
 export function Meadow() {
   const creatures = useGameStore((s) => s.creatures);
   const reducedMotion = useGameStore((s) => s.settings.reducedMotion);
+
+  const graduated = creatures.filter((c) => c.location === 'meadow');
+
   const cycleHat = (uid: string) => {
     const state = useGameStore.getState();
     const creature = state.creatures.find((c) => c.uid === uid);
@@ -17,28 +20,24 @@ export function Meadow() {
     });
   };
 
-  if (creatures.length === 0) {
+  if (graduated.length === 0) {
     return (
       <div className="meadow meadow-empty">
-        <p className="meadow-hint">Hatch an egg to see your creature friends!</p>
+        <p className="meadow-hint">Raise a creature to adulthood to see it here!</p>
       </div>
     );
   }
 
-  const totalRate = creatures.reduce((sum, c) => {
-    const species = SPECIES_MAP[c.speciesId];
-    if (!species) return sum;
-    return sum + species.coinsPerSec * (c.sparkle ? 2 : 1);
-  }, 0);
+  const totalRate = graduated.length * 0.05;
 
   return (
     <div className="meadow">
       <div className="meadow-header">
-        <h3 className="meadow-title">Your creatures</h3>
-        <span className="meadow-rate">+{totalRate.toFixed(1)} 🪙/s</span>
+        <h3 className="meadow-title">Graduated friends</h3>
+        <span className="meadow-rate">+{totalRate.toFixed(2)} 🪙/s</span>
       </div>
       <div className="meadow-row">
-        {creatures.map((c) => {
+        {graduated.map((c) => {
           const species = SPECIES_MAP[c.speciesId];
           if (!species) return null;
           return (
@@ -49,7 +48,15 @@ export function Meadow() {
               type="button"
               title="Tap to change hat"
             >
-              <CreatureSVG species={species} sparkle={c.sparkle} hat={c.hat} size={56} animate={!reducedMotion} />
+              <CreatureSVG
+                species={species}
+                sparkle={c.sparkle}
+                hat={c.hat}
+                size={56}
+                animate={!reducedMotion}
+                stage={c.stage}
+                track={c.track ?? undefined}
+              />
             </button>
           );
         })}

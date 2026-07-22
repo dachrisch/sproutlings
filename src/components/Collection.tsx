@@ -1,7 +1,7 @@
 import { useGameStore } from '../store/gameStore';
 import { SPECIES } from '../data/species';
 import { CreatureSVG } from './Creature';
-import type { Shape } from '../types';
+import type { Shape, Track } from '../types';
 
 function Silhouette({ hue, shape }: { hue: number; shape: Shape }) {
   const muted = `hsl(${hue}, 15%, 75%)`;
@@ -100,6 +100,12 @@ function Silhouette({ hue, shape }: { hue: number; shape: Shape }) {
   }
 }
 
+const TRACK_ICON: Record<Track, string> = {
+  sturdy: '🛡️',
+  sleek: '💨',
+  cheerful: '⭐',
+};
+
 export function Collection() {
   const dex = useGameStore((s) => s.dex);
   const found = Object.values(dex).filter((e) => e.normal).length;
@@ -108,21 +114,41 @@ export function Collection() {
 
   const sparklesFound = Object.values(dex).filter((e) => e.sparkle).length;
 
+  const formsCount = Object.values(dex).reduce((sum, e) => sum + e.formsRaised.length, 0);
+  const totalForms = SPECIES.length * 3;
+  const formsPct = Math.round((formsCount / totalForms) * 100);
+
   return (
     <section className="view collection-view">
       <h2 className="section-title">Collection</h2>
-      <div className="dex-progress-bar">
-        <div className="dex-progress-fill" style={{ width: `${pct}%` }} />
-        <span className="dex-progress-text">{found} / {total}</span>
+
+      <div className="dex-progress-section">
+        <span className="dex-progress-label">Species discovered</span>
+        <div className="dex-progress-bar">
+          <div className="dex-progress-fill" style={{ width: `${pct}%` }} />
+          <span className="dex-progress-text">{found} / {total}</span>
+        </div>
       </div>
+
+      <div className="dex-progress-section">
+        <span className="dex-progress-label">Adult forms raised</span>
+        <div className="dex-progress-bar">
+          <div className="dex-progress-fill forms-fill" style={{ width: `${formsPct}%` }} />
+          <span className="dex-progress-text">{formsCount} / {totalForms}</span>
+        </div>
+      </div>
+
       {found === total && (
         <p className="dex-complete">You found them all! ⭐</p>
       )}
+
       <p className="dex-sparkle-count">✨ Sparkles found: {sparklesFound}</p>
+
       <div className="dex-grid">
         {SPECIES.map((species) => {
           const entry = dex[species.id];
           const discovered = !!entry?.normal;
+          const raisedTracks = entry?.formsRaised ?? [];
           return (
             <div key={species.id} className={`dex-cell ${discovered ? 'discovered' : 'unknown'}`}>
               {discovered ? (
@@ -135,6 +161,19 @@ export function Collection() {
               <span className="dex-name">{discovered ? species.name : '???'}</span>
               {discovered && (
                 <span className={`dex-rarity ${species.rarity}`}>{species.rarity}</span>
+              )}
+              {discovered && (
+                <div className="dex-tracks">
+                  {(['sturdy', 'sleek', 'cheerful'] as Track[]).map((t) => (
+                    <span
+                      key={t}
+                      className={`dex-track-dot ${raisedTracks.includes(t) ? 'raised' : 'unraised'}`}
+                      title={species.forms[t]?.label ?? t}
+                    >
+                      {raisedTracks.includes(t) ? TRACK_ICON[t] : '○'}
+                    </span>
+                  ))}
+                </div>
               )}
               {entry?.sparkle && <span className="dex-sparkle-badge">✨</span>}
               {discovered && !entry?.sparkle && <span className="dex-sparkle-empty" />}

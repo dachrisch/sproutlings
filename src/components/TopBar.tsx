@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useGameStore } from '../store/gameStore';
+import { SPECIES } from '../data/species';
 import type { Tab } from '../types';
 
 const tabs: { id: Tab; label: string }[] = [
   { id: 'garden',     label: 'Garden' },
+  { id: 'nursery',    label: 'Nursery' },
   { id: 'collection', label: 'Collection' },
   { id: 'shop',       label: 'Shop' },
 ];
@@ -23,7 +25,7 @@ export function TopBar() {
   const [confirmReset, setConfirmReset] = useState(false);
 
   const found = Object.values(dex).filter((e) => e.normal).length;
-  const total = 16;
+  const total = SPECIES.length;
 
   return (
     <header className="topbar">

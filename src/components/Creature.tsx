@@ -1,5 +1,5 @@
 import type { JSX } from 'react';
-import type { Species } from '../types';
+import type { Species, Stage, Track } from '../types';
 
 interface CreatureSVGProps {
   species: Species;
@@ -7,7 +7,15 @@ interface CreatureSVGProps {
   hat?: string | null;
   size?: number;
   animate?: boolean;
+  stage?: Stage;
+  track?: Track;
 }
+
+const STAGE_SCALE: Record<Stage, number> = {
+  baby: 0.65,
+  teen: 0.85,
+  adult: 1.0,
+};
 
 function bodyPath(shape: string, hue: number): { path: JSX.Element; faceY: number } {
   const fill = `hsl(${hue}, 60%, 55%)`;
@@ -184,10 +192,25 @@ function HatOverlay({ hat }: { hat: string }) {
   }
 }
 
-export function CreatureSVG({ species, sparkle, hat, size = 64, animate }: CreatureSVGProps) {
-  const hue = sparkle ? (species.hue + 30) % 360 : species.hue;
+function StageBadge({ stage }: { stage: Stage }) {
+  const colors: Record<Stage, string> = {
+    baby: '#ff9999',
+    teen: '#7ec8e3',
+    adult: '#f5b342',
+  };
+  return (
+    <circle cx="85" cy="85" r="10" fill={colors[stage]} stroke="white" strokeWidth="2" />
+  );
+}
+
+export function CreatureSVG({ species, sparkle, hat, size = 64, animate, stage, track }: CreatureSVGProps) {
+  let hue = species.hue;
+  if (sparkle) hue = (hue + 30) % 360;
+  if (track && species.forms?.[track]) hue = (hue + species.forms[track].hueShift) % 360;
   const sparkleSpecies = sparkle ? { ...species, hue } : species;
   const { path, faceY } = bodyPath(sparkleSpecies.shape, hue);
+
+  const scale = stage ? (STAGE_SCALE[stage] ?? 1.0) : 1.0;
 
   return (
     <svg
@@ -197,10 +220,13 @@ export function CreatureSVG({ species, sparkle, hat, size = 64, animate }: Creat
       xmlns="http://www.w3.org/2000/svg"
       className={animate ? 'creature-bob' : undefined}
     >
-      {path}
-      <Face y={faceY} />
+      <g transform={`translate(50, 50) scale(${scale}) translate(-50, -50)`}>
+        {path}
+        <Face y={faceY} />
+      </g>
       {sparkle && <SparkleOverlay />}
       {hat && <HatOverlay hat={hat} />}
+      {stage && <StageBadge stage={stage} />}
     </svg>
   );
 }

@@ -1,7 +1,12 @@
-import type { Species, Rarity } from '../types';
-import { RARITY_WEIGHTS } from '../constants';
+import type { Species, Rarity, Track } from '../types';
 
-const speciesData: (Omit<Species, 'coinsPerSec'> & { rarity: Rarity })[] = [
+const TRACKS: Record<Track, { hueShift: number; label: string }> = {
+  sturdy: { hueShift: 0, label: 'Sturdy' },
+  sleek: { hueShift: -20, label: 'Sleek' },
+  cheerful: { hueShift: 20, label: 'Cheerful' },
+};
+
+const speciesData: { id: string; name: string; rarity: Rarity; shape: Species['shape']; hue: number }[] = [
   { id: 'mossling',  name: 'Mossling',  rarity: 'common',    shape: 'blob',     hue: 110 },
   { id: 'berrybub',  name: 'Berrybub',  rarity: 'common',    shape: 'blob',     hue: 330 },
   { id: 'sunny',     name: 'Sunny',     rarity: 'common',    shape: 'round',    hue: 48  },
@@ -22,7 +27,7 @@ const speciesData: (Omit<Species, 'coinsPerSec'> & { rarity: Rarity })[] = [
 
 export const SPECIES: Species[] = speciesData.map((s) => ({
   ...s,
-  coinsPerSec: RARITY_WEIGHTS[s.rarity].coinsPerSec,
+  forms: { ...TRACKS },
 }));
 
 export const SPECIES_MAP: Record<string, Species> = Object.fromEntries(

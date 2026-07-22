@@ -30,13 +30,36 @@ export const NEW_SPECIES_BONUS = 10;
 
 export const AUTOSAVE_INTERVAL_MS = 8_000;
 
-export const RARITY_WEIGHTS: Record<string, { weight: number; coinsPerSec: number }> = {
-  common:    { weight: 0.50, coinsPerSec: 0.2 },
-  uncommon:  { weight: 0.30, coinsPerSec: 0.5 },
-  rare:      { weight: 0.16, coinsPerSec: 1.2 },
-  legendary: { weight: 0.04, coinsPerSec: 3.0 },
+export const RARITY_WEIGHTS: Record<string, { weight: number }> = {
+  common:    { weight: 0.50 },
+  uncommon:  { weight: 0.30 },
+  rare:      { weight: 0.16 },
+  legendary: { weight: 0.04 },
 };
 
 export const HATS = ['crown', 'flower', 'bow', 'tophat', 'ribbon'] as const;
 
-export const SAVE_VERSION = 1;
+export const NURSERY_SLOTS = 3;
+export const STARTING_FULLNESS = 100;
+export const STARTING_ENERGY = 100;
+export const FEED_AMOUNT = 30;
+export const PLAY_AMOUNT = 30;
+export const TRAIN_COST_FULLNESS = 15;
+export const TRAIN_COST_ENERGY = 15;
+export const SPAR_COST_ENERGY = 20;
+export const TRAIN_COOLDOWN_MS = 3 * 60 * 1000;
+export const STAT_XP_WELL_TIMED = 8;
+export const STAT_XP_ROUGH = 4;
+export const STAT_XP_SPAR = 6;
+export const STAGE_UP_THRESHOLD_TEEN = 30;
+export const STAGE_UP_THRESHOLD_ADULT = 90;
+export const FOOD_PRICE = 6;
+export const TOY_PRICE = 6;
+export const TRAIN_COIN_REWARD_MIN = 2;
+export const TRAIN_COIN_REWARD_MAX = 4;
+export const SPAR_COIN_REWARD = 3;
+export const STAGE_UP_BONUS = 10;
+export const NEW_FORM_BONUS = 15;
+export const MEADOW_TRICKLE_RATE = 0.05;
+
+export const SAVE_VERSION = 2;
