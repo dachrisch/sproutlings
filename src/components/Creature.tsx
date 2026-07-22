@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import type { Species } from '../types';
 
 interface CreatureSVGProps {
