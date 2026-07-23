@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/dachrisch/sproutlings/compare/v1.1.0...v1.2.0) (2026-07-23)
+
+
+### Features
+
+* add Tuxemon Set 1 pixel-art sprites for all 12 creatures ([#12](https://github.com/dachrisch/sproutlings/issues/12)) ([1323bfd](https://github.com/dachrisch/sproutlings/commit/1323bfd31ec1e708b849919db4010862a9b9eb9e))
+
 ## [1.1.0](https://github.com/dachrisch/sproutlings/compare/v1.0.0...v1.1.0) (2026-07-23)
 
 
