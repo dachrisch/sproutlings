@@ -5,14 +5,42 @@ function getCtx(): AudioContext {
   return ctx;
 }
 
-function playTone(freq: number, duration: number, type: OscillatorType = 'sine', volume = 0.15) {
+function playTone(
+  freq: number,
+  duration: number,
+  type: OscillatorType = 'sine',
+  volume = 0.12,
+  delay = 0,
+) {
   try {
     const c = getCtx();
     const osc = c.createOscillator();
     const gain = c.createGain();
     osc.type = type;
-    osc.frequency.setValueAtTime(freq, c.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(freq * 1.5, c.currentTime + duration * 0.3);
+    osc.frequency.setValueAtTime(freq, c.currentTime + delay);
+    gain.gain.setValueAtTime(volume, c.currentTime + delay);
+    gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + delay + duration);
+    osc.connect(gain);
+    gain.connect(c.destination);
+    osc.start(c.currentTime + delay);
+    osc.stop(c.currentTime + delay + duration);
+  } catch {}
+}
+
+function playSlide(
+  startFreq: number,
+  endFreq: number,
+  duration: number,
+  type: OscillatorType = 'sine',
+  volume = 0.12,
+) {
+  try {
+    const c = getCtx();
+    const osc = c.createOscillator();
+    const gain = c.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(startFreq, c.currentTime);
+    osc.frequency.linearRampToValueAtTime(endFreq, c.currentTime + duration);
     gain.gain.setValueAtTime(volume, c.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + duration);
     osc.connect(gain);
@@ -25,11 +53,11 @@ function playTone(freq: number, duration: number, type: OscillatorType = 'sine',
 function playNoise(duration: number, volume = 0.08) {
   try {
     const c = getCtx();
-    const bufferSize = c.sampleRate * duration;
+    const bufferSize = Math.floor(c.sampleRate * duration);
     const buffer = c.createBuffer(1, bufferSize, c.sampleRate);
     const data = buffer.getChannelData(0);
     for (let i = 0; i < bufferSize; i++) {
-      data[i] = (Math.random() * 2 - 1) * Math.max(0, 1 - i / bufferSize);
+      data[i] = Math.random() * 2 - 1;
     }
     const source = c.createBufferSource();
     source.buffer = buffer;
@@ -42,81 +70,39 @@ function playNoise(duration: number, volume = 0.08) {
   } catch {}
 }
 
-function playNotes(notes: { freq: number; time: number; dur: number }[], type: OscillatorType = 'sine', volume = 0.12) {
-  try {
-    const c = getCtx();
-    for (const n of notes) {
-      const osc = c.createOscillator();
-      const gain = c.createGain();
-      osc.type = type;
-      osc.frequency.setValueAtTime(n.freq, c.currentTime + n.time);
-      gain.gain.setValueAtTime(volume, c.currentTime + n.time);
-      gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + n.time + n.dur);
-      osc.connect(gain);
-      gain.connect(c.destination);
-      osc.start(c.currentTime + n.time);
-      osc.stop(c.currentTime + n.time + n.dur);
-    }
-  } catch {}
+export function playHit(): void {
+  playNoise(0.04, 0.08);
+  playTone(150, 0.1, 'square', 0.12, 0.02);
 }
 
-export function playPlant() {
-  playNoise(0.1, 0.06);
-  playTone(150, 0.12, 'triangle', 0.1);
+export function playCatchShake(): void {
+  playTone(800, 0.06, 'sine', 0.1, 0);
+  playTone(1000, 0.06, 'sine', 0.1, 0.08);
 }
 
-export function playWater() {
-  playTone(600, 0.08, 'sine', 0.08);
-  playTone(800, 0.1, 'sine', 0.06);
-  playNoise(0.15, 0.04);
+export function playCatchSuccess(): void {
+  playTone(523, 0.15, 'sine', 0.12, 0);
+  playTone(659, 0.15, 'sine', 0.12, 0.12);
+  playTone(784, 0.2, 'sine', 0.12, 0.24);
 }
 
-export function playHatch() {
-  playNotes([
-    { freq: 523, time: 0, dur: 0.15 },
-    { freq: 659, time: 0.1, dur: 0.15 },
-    { freq: 784, time: 0.2, dur: 0.25 },
-  ], 'sine', 0.12);
+export function playCatchFail(): void {
+  playTone(400, 0.15, 'sawtooth', 0.1, 0);
+  playTone(300, 0.2, 'sawtooth', 0.1, 0.12);
 }
 
-export function playCoin() {
-  playTone(1200, 0.08, 'sine', 0.06);
-  playTone(1800, 0.12, 'sine', 0.04);
+export function playFaint(): void {
+  playSlide(400, 80, 0.45, 'sawtooth', 0.1);
 }
 
-export function playDiscovery() {
-  playNotes([
-    { freq: 523, time: 0, dur: 0.15 },
-    { freq: 659, time: 0.12, dur: 0.15 },
-    { freq: 784, time: 0.24, dur: 0.15 },
-    { freq: 1047, time: 0.36, dur: 0.3 },
-  ], 'sine', 0.12);
+export function playVictory(): void {
+  const notes = [523, 587, 659, 698, 784];
+  for (let i = 0; i < notes.length; i++) {
+    playTone(notes[i], 0.12, 'square', 0.1, i * 0.1);
+  }
 }
 
-export function playComplete() {
-  playNotes([
-    { freq: 523, time: 0, dur: 0.2 },
-    { freq: 659, time: 0.15, dur: 0.2 },
-    { freq: 784, time: 0.3, dur: 0.2 },
-    { freq: 1047, time: 0.45, dur: 0.3 },
-    { freq: 1319, time: 0.6, dur: 0.4 },
-  ], 'sine', 0.15);
-  playNotes([
-    { freq: 1047, time: 0.7, dur: 0.2 },
-    { freq: 1319, time: 0.85, dur: 0.2 },
-    { freq: 1568, time: 1.0, dur: 0.5 },
-  ], 'triangle', 0.1);
-}
-
-export function playPurchase() {
-  playTone(440, 0.06, 'triangle', 0.08);
-  playTone(660, 0.08, 'triangle', 0.06);
-}
-
-export function playWelcome() {
-  playNotes([
-    { freq: 440, time: 0, dur: 0.12 },
-    { freq: 554, time: 0.1, dur: 0.12 },
-    { freq: 659, time: 0.2, dur: 0.2 },
-  ], 'sine', 0.08);
+export function playLevelUp(): void {
+  playTone(1047, 0.2, 'triangle', 0.12, 0);
+  playTone(1319, 0.25, 'triangle', 0.1, 0.15);
 }

@@ -1,0 +1,9 @@
+{
+  "types": ["fire", "water", "grass", "stone"],
+  "chart": {
+    "fire":  { "fire": 0.5, "water": 0.5, "grass": 2.0, "stone": 1.0 },
+    "water": { "fire": 2.0, "water": 0.5, "grass": 0.5, "stone": 2.0 },
+    "grass": { "fire": 0.5, "water": 2.0, "grass": 0.5, "stone": 2.0 },
+    "stone": { "fire": 2.0, "water": 0.5, "grass": 0.5, "stone": 1.0 }
+  }
+}

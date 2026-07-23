@@ -1,0 +1,16 @@
+[
+  { "id": "scratch",   "name": "Scratch",   "type": "stone", "power": 35,  "accuracy": 0.95, "unlockLevel": 1 },
+  { "id": "tackle",    "name": "Tackle",    "type": "stone", "power": 40,  "accuracy": 0.95, "unlockLevel": 1 },
+  { "id": "ember",     "name": "Ember",     "type": "fire",  "power": 40,  "accuracy": 0.95, "unlockLevel": 1 },
+  { "id": "flare",     "name": "Flare",     "type": "fire",  "power": 65,  "accuracy": 0.85, "unlockLevel": 6 },
+  { "id": "inferno",   "name": "Inferno",   "type": "fire",  "power": 95,  "accuracy": 0.75, "unlockLevel": 12 },
+  { "id": "splash",    "name": "Splash",    "type": "water", "power": 40,  "accuracy": 0.95, "unlockLevel": 1 },
+  { "id": "wave",      "name": "Wave",      "type": "water", "power": 60,  "accuracy": 0.90, "unlockLevel": 5 },
+  { "id": "geyser",    "name": "Geyser",    "type": "water", "power": 90,  "accuracy": 0.80, "unlockLevel": 11 },
+  { "id": "vine",      "name": "Vine",      "type": "grass", "power": 40,  "accuracy": 0.95, "unlockLevel": 1 },
+  { "id": "thorn",     "name": "Thorn",     "type": "grass", "power": 60,  "accuracy": 0.90, "unlockLevel": 5 },
+  { "id": "solarbeam", "name": "Solar Beam", "type": "grass", "power": 100, "accuracy": 0.70, "unlockLevel": 13 },
+  { "id": "boulder",   "name": "Boulder",   "type": "stone", "power": 55,  "accuracy": 0.90, "unlockLevel": 4 },
+  { "id": "landslide", "name": "Landslide", "type": "stone", "power": 85,  "accuracy": 0.80, "unlockLevel": 10 },
+  { "id": "headbutt",  "name": "Headbutt",  "type": "stone", "power": 50,  "accuracy": 0.90, "unlockLevel": 3 }
+]
