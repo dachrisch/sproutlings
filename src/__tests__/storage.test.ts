@@ -16,7 +16,7 @@ const mockState: GameState = {
   luckLevel: 1,
   ownedHats: ['crown'],
   creatures: [
-    { uid: 'c1', speciesId: 'mossling', sparkle: false, hat: null },
+    { uid: 'c1', speciesId: 'mossling', sparkle: false, hat: null, level: 1, xp: 0, happiness: 50, stage: 'baby', training: 'none' },
   ],
   dex: { mossling: { normal: true, sparkle: false } },
   settings: { reducedMotion: false, sound: true },
