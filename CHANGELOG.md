@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/dachrisch/sproutlings/compare/v1.3.0...v1.3.1) (2026-07-23)
+
+
+### Bug Fixes
+
+* make victory rewards visible and defeat reachable in battle ([#16](https://github.com/dachrisch/sproutlings/issues/16)) ([0e217a4](https://github.com/dachrisch/sproutlings/commit/0e217a4c6567c789c24e2bb4be3368e79dd86145))
+
 ## [1.3.0](https://github.com/dachrisch/sproutlings/compare/v1.2.0...v1.3.0) (2026-07-23)
 
 
