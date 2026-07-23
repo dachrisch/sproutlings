@@ -1,0 +1,12 @@
+{
+  "name": "Monster Collector",
+  "short_name": "Monsters",
+  "description": "Catch and collect creatures in turn-based battles",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#e8f5e0",
+  "theme_color": "#6abf69",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

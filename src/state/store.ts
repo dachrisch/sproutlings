@@ -51,7 +51,7 @@ function isInteractive(phase: BattlePhase): boolean {
 }
 
 function isTerminal(phase: BattlePhase): boolean {
-  return phase === 'VICTORY' || phase === 'DEFEAT' || phase === 'FLED' || phase === 'END' || phase === 'CAUGHT';
+  return phase === 'VICTORY' || phase === 'DEFEAT' || phase === 'FLED' || phase === 'END';
 }
 
 interface GameStore extends SaveData {

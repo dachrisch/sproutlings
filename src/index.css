@@ -446,6 +446,13 @@ button {
   100% { transform: translateY(100vh) rotate(720deg) scale(0.5); opacity: 0; }
 }
 
+/* ─── Battle: shake animation ─── */
+@keyframes shake {
+  0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+  25% { transform: translate(-50%, -50%) rotate(-15deg); }
+  75% { transform: translate(-50%, -50%) rotate(15deg); }
+}
+
 /* ─── Battle: damage float ─── */
 @keyframes damage-float {
   0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }

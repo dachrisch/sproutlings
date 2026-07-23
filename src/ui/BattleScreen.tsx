@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { BattlePhase, CreatureDef, PartyCreature } from '../types';
 import { useGameStore } from '../state/store';
+import { useBattleAudio } from '../state/audioManager';
 import { Sprite } from './components/Sprite';
 import { MoveGrid } from './components/MoveGrid';
 import { HpBar } from './components/HpBar';
@@ -25,6 +26,10 @@ export function BattleScreen() {
   const [showSwitch, setShowSwitch] = useState(false);
   const [popups, setPopups] = useState<{ id: number; amount: number; effectiveness?: number; x: number; y: number }[]>([]);
   const [popupId, setPopupId] = useState(0);
+  const [shakePhase, setShakePhase] = useState<'idle' | 'shaking' | 'success' | 'fail'>('idle');
+  const [fainted, setFainted] = useState<'none' | 'enemy' | 'player'>('none');
+
+  useBattleAudio(battleState);
 
   const phase: BattlePhase | null = battleState?.phase ?? null;
   const playerCreature: PartyCreature | null = battleState?.playerCreature ?? null;
@@ -36,20 +41,37 @@ export function BattleScreen() {
 
   useEffect(() => {
     setShowSwitch(false);
-  }, [phase]);
+    if (phase === 'CAUGHT') {
+      const shakes = battleState?.catchShakes ?? 3;
+      const delay = battleState?.catchShakeResult ? 500 : 400;
+      setShakePhase('shaking');
+      const totalTime = shakes * delay + 300;
+      setTimeout(() => {
+        setShakePhase(battleState?.catchShakeResult ? 'success' : 'fail');
+      }, totalTime);
+    }
+    if (phase === 'INTRO') {
+      setFainted('none');
+      setShakePhase('idle');
+    }
+  }, [phase, battleState?.catchShakes, battleState?.catchShakeResult]);
 
   useEffect(() => {
-    if (phase === 'NAME_PROMPT' && battleState?.caughtCreature && enemyDef) {
+    if (phase === 'NAME_PROMPT' && enemyDef) {
       setNickname(enemyDef.name);
     }
-  }, [phase, battleState?.caughtCreature, enemyDef]);
+  }, [phase, enemyDef]);
 
   useEffect(() => {
-    if (phase === 'CHECK_FAINT') {
-      const t = setTimeout(() => performAction({ type: 'FIGHT', moveId: '' }), 800);
+    if (phase === 'CAUGHT' && shakePhase === 'success') {
+      const t = setTimeout(() => performAction({ type: 'FIGHT', moveId: '' }), 600);
       return () => clearTimeout(t);
     }
-  }, [phase, performAction]);
+    if (phase === 'CAUGHT' && shakePhase === 'fail') {
+      const t = setTimeout(() => performAction({ type: 'FIGHT', moveId: '' }), 400);
+      return () => clearTimeout(t);
+    }
+  }, [phase, shakePhase, performAction]);
 
   useEffect(() => {
     if (phase === 'END') {
@@ -58,24 +80,43 @@ export function BattleScreen() {
   }, [phase, finishBattle]);
 
   useEffect(() => {
-    if (phase === 'CAUGHT') {
-      const t = setTimeout(() => performAction({ type: 'CATCH' }), 1500);
+    if (phase === 'RESOLVING') {
+      const t = setTimeout(() => performAction({ type: 'FIGHT', moveId: '' }), 600);
       return () => clearTimeout(t);
     }
   }, [phase, performAction]);
+
+  useEffect(() => {
+    if (phase === 'VICTORY') {
+      const t = setTimeout(() => performAction({ type: 'FIGHT', moveId: '' }), 1000);
+      return () => clearTimeout(t);
+    }
+  }, [phase, performAction]);
+
+  useEffect(() => {
+    if (phase === 'FLED') {
+      const t = setTimeout(() => finishBattle(), 1500);
+      return () => clearTimeout(t);
+    }
+  }, [phase, finishBattle]);
 
   useEffect(() => {
     if (lastEvent?.type === 'damage' && lastEvent.amount != null) {
       const id = popupId;
       setPopupId(prev => prev + 1);
       const isEnemy = lastEvent.target === 'enemy';
-      setPopups(prev => [...prev, { id, amount: lastEvent.amount!, effectiveness: lastEvent.effectiveness, x: isEnemy ? 50 : 50, y: isEnemy ? 25 : 70 }]);
+      setPopups(prev => [...prev, {
+        id,
+        amount: lastEvent.amount!,
+        effectiveness: lastEvent.effectiveness,
+        x: isEnemy ? 50 : 50,
+        y: isEnemy ? 25 : 70,
+      }]);
+    }
+    if (lastEvent?.type === 'faint') {
+      setFainted(lastEvent.target === 'enemy' ? 'enemy' : 'player');
     }
   }, [lastEvent, popupId]);
-
-  const handleStartBattle = useCallback(() => {
-    performAction({ type: 'FIGHT', moveId: '' });
-  }, [performAction]);
 
   const handleMoveSelect = useCallback((moveId: string) => {
     performAction({ type: 'FIGHT', moveId });
@@ -96,10 +137,8 @@ export function BattleScreen() {
 
   const handleNicknameConfirm = useCallback(() => {
     if (!enemyCreature) return;
-    const idx = party.findIndex(p => p.creatureId === enemyCreature.creatureId);
-    if (idx >= 0) {
-      setName(idx, nickname);
-    }
+    const alive = party.filter(p => p.currentHp > 0);
+    setName(alive.length, nickname);
     finishBattle();
   }, [enemyCreature, finishBattle, nickname, party, setName]);
 
@@ -118,6 +157,9 @@ export function BattleScreen() {
   const switchCandidates = phase === 'FORCE_SWITCH'
     ? partyAlive.filter(p => p.creatureId !== playerCreature.creatureId)
     : partyAlive;
+
+  const enemyOpacity = fainted === 'enemy' ? 0.3 : 1;
+  const playerOpacity = fainted === 'player' ? 0.3 : 1;
 
   const renderTopArea = () => (
     <div
@@ -140,13 +182,12 @@ export function BattleScreen() {
               fontWeight: 800,
               marginTop: 12,
               textAlign: 'center',
-              textShadow: '0 1px 2px rgba(255,255,255,0.6)',
             }}
           >
             A wild {enemyDef?.name ?? '???'} appeared!
           </div>
           <button
-            onClick={handleStartBattle}
+            onClick={() => performAction({ type: 'FIGHT', moveId: '' })}
             style={{
               marginTop: 16,
               padding: '14px 48px',
@@ -165,7 +206,28 @@ export function BattleScreen() {
           </button>
         </>
       ) : (
-        <Sprite creatureId={enemyCreature.creatureId} variant="front" size={96} />
+        <div style={{ opacity: enemyOpacity, transition: 'opacity 0.5s' }}>
+          <Sprite creatureId={enemyCreature.creatureId} variant="front" size={96} />
+          {shakePhase !== 'idle' && (
+            <div
+              style={{
+                position: 'absolute',
+                top: '40%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                fontSize: '2rem',
+                fontWeight: 800,
+                color: shakePhase === 'success' ? '#6abf69' : '#e74c3c',
+                textShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                animation: shakePhase === 'shaking' ? 'shake 0.3s infinite' : 'none',
+              }}
+            >
+              {shakePhase === 'shaking' && '⚾'}
+              {shakePhase === 'success' && '⭐'}
+              {shakePhase === 'fail' && '💥'}
+            </div>
+          )}
+        </div>
       )}
 
       {popups.map(p => (
@@ -210,6 +272,8 @@ export function BattleScreen() {
         justifyContent: 'center',
         padding: '4px 16px 8px',
         gap: 6,
+        opacity: playerOpacity,
+        transition: 'opacity 0.5s',
       }}
     >
       <Sprite creatureId={playerCreature.creatureId} variant="back" size={72} />
@@ -331,43 +395,6 @@ export function BattleScreen() {
                 Learned {battleState.unlockedMove}!
               </div>
             )}
-            <button
-              onClick={finishBattle}
-              style={{
-                marginTop: 6,
-                padding: '14px 48px',
-                borderRadius: 22,
-                background: '#6abf69',
-                color: '#fff',
-                border: 'none',
-                fontWeight: 800,
-                fontSize: '1rem',
-                cursor: 'pointer',
-                minHeight: 44,
-                fontFamily: 'inherit',
-              }}
-            >
-              Continue
-            </button>
-          </div>
-        );
-
-      case 'CAUGHT':
-        return (
-          <div style={{ padding: 16, textAlign: 'center' }}>
-            <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#6abf69' }}>
-              Gotcha!
-            </div>
-            <div
-              style={{
-                fontSize: '0.85rem',
-                fontWeight: 700,
-                marginTop: 4,
-                color: '#7a6e6a',
-              }}
-            >
-              {enemyDef?.name} was caught!
-            </div>
           </div>
         );
 
@@ -382,13 +409,7 @@ export function BattleScreen() {
               gap: 8,
             }}
           >
-            <div
-              style={{
-                fontSize: '0.9rem',
-                fontWeight: 700,
-                textAlign: 'center',
-              }}
-            >
+            <div style={{ fontSize: '0.9rem', fontWeight: 700, textAlign: 'center' }}>
               You caught {enemyDef?.name}! Give it a nickname:
             </div>
             <input
@@ -462,40 +483,6 @@ export function BattleScreen() {
           </div>
         );
 
-      case 'FLED':
-        return (
-          <div
-            style={{
-              padding: 16,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: 8,
-            }}
-          >
-            <div style={{ fontSize: '1rem', fontWeight: 800 }}>
-              You got away safely!
-            </div>
-            <button
-              onClick={finishBattle}
-              style={{
-                padding: '14px 48px',
-                borderRadius: 22,
-                background: '#6abf69',
-                color: '#fff',
-                border: 'none',
-                fontWeight: 800,
-                fontSize: '1rem',
-                cursor: 'pointer',
-                minHeight: 44,
-                fontFamily: 'inherit',
-              }}
-            >
-              Continue
-            </button>
-          </div>
-        );
-
       case 'RESOLVING':
         return (
           <div
@@ -510,6 +497,11 @@ export function BattleScreen() {
             {lastEvent?.text ?? '...'}
           </div>
         );
+
+      case 'CAUGHT':
+      case 'FLED':
+      case 'END':
+        return null;
 
       default:
         return null;
@@ -547,13 +539,9 @@ export function BattleScreen() {
 }
 
 function ActionBtn({
-  onClick,
-  label,
-  disabled,
+  onClick, label, disabled,
 }: {
-  onClick: () => void;
-  label: string;
-  disabled?: boolean;
+  onClick: () => void; label: string; disabled?: boolean;
 }) {
   return (
     <button
@@ -580,22 +568,16 @@ function ActionBtn({
 }
 
 function PartySelectList({
-  candidates,
-  onSelect,
-  onCancel,
+  candidates, onSelect, onCancel,
 }: {
-  candidates: PartyCreature[];
-  onSelect: (idx: number) => void;
-  onCancel?: () => void;
+  candidates: PartyCreature[]; onSelect: (idx: number) => void; onCancel?: () => void;
 }) {
   const party = useGameStore(s => s.party);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
       {candidates.map(p => {
-        const idx = party.findIndex(
-          pp => pp.creatureId === p.creatureId && pp.nickname === p.nickname,
-        );
+        const idx = party.findIndex(pp => pp.creatureId === p.creatureId && pp.nickname === p.nickname);
         return (
           <button
             key={`${p.creatureId}-${idx}`}
@@ -618,16 +600,10 @@ function PartySelectList({
           >
             <span
               style={{
-                width: 24,
-                height: 24,
-                borderRadius: '50%',
-                background: '#e8f5e0',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '0.7rem',
-                fontWeight: 800,
-                flexShrink: 0,
+                width: 24, height: 24, borderRadius: '50%',
+                background: '#e8f5e0', display: 'flex',
+                alignItems: 'center', justifyContent: 'center',
+                fontSize: '0.7rem', fontWeight: 800, flexShrink: 0,
               }}
             >
               {p.level}
@@ -643,16 +619,10 @@ function PartySelectList({
         <button
           onClick={onCancel}
           style={{
-            padding: '10px 14px',
-            border: '2px solid #d4cfc4',
-            borderRadius: 12,
-            background: '#f0ece6',
-            cursor: 'pointer',
-            fontWeight: 700,
-            fontSize: '0.85rem',
-            minHeight: 44,
-            fontFamily: 'inherit',
-            color: '#7a6e6a',
+            padding: '10px 14px', border: '2px solid #d4cfc4',
+            borderRadius: 12, background: '#f0ece6', cursor: 'pointer',
+            fontWeight: 700, fontSize: '0.85rem', minHeight: 44,
+            fontFamily: 'inherit', color: '#7a6e6a',
           }}
         >
           Cancel
