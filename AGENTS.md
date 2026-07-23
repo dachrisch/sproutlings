@@ -62,6 +62,26 @@ src/
 └── index.css             # Global styles
 ```
 
+## Sprite mapping
+12 game creatures mapped to Tuxemon Set 1 sprites:
+
+| Game ID | Tuxemon Source | Files |
+|---|---|---|
+| emberfox | Grinflare | `public/assets/creatures/emberfox_{front,back,face,face2}.png` |
+| pebblet | Rockitten | ... |
+| sparkmoth | Elofly | ... |
+| cindermane | Drokoro | ... |
+| bubblefin | Sharpfin | ... |
+| shellock | Forturtle | ... |
+| riptide | Hampotamos | ... |
+| sproutling | Dandicub | ... |
+| thornbush | Moloch | ... |
+| mossquatch | Viviphyta | ... |
+| stoutrock | Polyrock | ... |
+| crystalwing | Tigrock | ... |
+
+All sprites CC BY-SA 3.0 from Tuxemon project. See `ATTRIBUTION.md` for full credits.
+
 ## Battle state machine
 ```
 INTRO → PLAYER_ACTION → RESOLVING → CHECK_FAINT
