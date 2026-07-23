@@ -13,8 +13,8 @@ Current state: Phase 0 (scaffold) is complete. Phase 1 (MVP core loop — plots,
 - `npm run dev` — start the Vite dev server
 - `npm run build` — type-check (`tsc -b`) then build static assets to `dist/`
 - `npm run preview` — serve the production build locally
-
-There is no test suite or linter configured yet.
+- `npm run lint` — run oxlint
+- `npm run test` — run vitest (no test files yet; passes via `passWithNoTests`)
 
 ## Architecture
 
@@ -41,3 +41,7 @@ There is no test suite or linter configured yet.
 
 - `docs/sproutlings-spec.md` — full design spec: systems detail, tuning table, data model, phased milestones with acceptance criteria, and quality floor. Consult it before implementing a new system (e.g. hatching, the shop, the dex) rather than inferring behavior from placeholders.
 - `AGENTS.md` — condensed project memory; content overlaps with this file.
+
+## CI/CD
+
+Pushing any branch runs `.github/workflows/ci_branch.yaml`: node build/lint/test, then a Docker image build (nginx serving `dist/`), then a container health-check test. Pushing a tag (done by release-please, not manually) runs `.github/workflows/ci.yaml`, which additionally pushes the image to Docker Hub as `dachrisch/sproutlings:<tag>` and `:latest`. Versioned releases with changelogs are cut by `release-please` off conventional-commit messages on `master`; Renovate dependency bumps use `fix:` commits so they cascade into real releases automatically. See `docs/superpowers/specs/2026-07-22-ci-cd-infrastructure-design.md` for the full design rationale.
