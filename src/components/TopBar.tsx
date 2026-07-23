@@ -5,7 +5,7 @@ import type { Tab } from '../types';
 
 const tabs: { id: Tab; label: string; icon: string }[] = [
   { id: 'zoo',         label: 'Zoo',         icon: '🏠' },
-  { id: 'expeditions', label: 'Expeditions',  icon: '🗺️' },
+  { id: 'expeditions', label: 'Explore',  icon: '🗺️' },
   { id: 'collection',  label: 'Collection',   icon: '📋' },
   { id: 'shop',        label: 'Shop',         icon: '🏪' },
 ];

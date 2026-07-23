@@ -55,10 +55,11 @@ button {
 
 .topbar-stats {
   display: flex;
-  gap: 6px;
+  gap: 4px;
   justify-content: center;
   align-items: center;
   margin-bottom: 6px;
+  flex-wrap: wrap;
 }
 
 .stat {
@@ -77,14 +78,15 @@ button {
   background: none;
   border: 2px solid var(--c-border);
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   font-size: 1rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
+  flex-shrink: 0;
 }
 
 .settings-panel {
@@ -147,16 +149,20 @@ button {
 
 .tab {
   flex: 1;
-  padding: 10px 4px;
+  min-width: 0;
+  padding: 12px 2px;
   border: 2px solid var(--c-border);
   border-radius: var(--radius);
   background: var(--c-surface);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 700;
   color: var(--c-text);
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s, transform 0.1s;
-  white-space: nowrap;
+  line-height: 1.2;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
 .tab.active {
@@ -285,13 +291,15 @@ button {
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  padding: 10px 8px 8px;
+  padding: 12px 6px 10px;
   background: rgba(255,255,255,0.55);
   border: 2px solid transparent;
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
-  min-width: 80px;
+  flex: 1 0 80px;
+  max-width: 100px;
+  min-width: 72px;
   position: relative;
 }
 
