@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.3.0](https://github.com/dachrisch/sproutlings/compare/v1.2.0...v1.3.0) (2026-07-23)
+
+
+### Features
+
+* creature animation and care system ([43b8b39](https://github.com/dachrisch/sproutlings/commit/43b8b3968a024bfde08a92cdb528346e3ff66480))
+
+
+### Bug Fixes
+
+* render pixel-art sprite for discovered creatures in Dex ([#14](https://github.com/dachrisch/sproutlings/issues/14)) ([af20eda](https://github.com/dachrisch/sproutlings/commit/af20edafa7242710207f35fb4bff99a82c74ec12))
+
 ## [1.2.0](https://github.com/dachrisch/sproutlings/compare/v1.1.0...v1.2.0) (2026-07-23)
 
 
