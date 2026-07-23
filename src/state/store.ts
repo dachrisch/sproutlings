@@ -51,8 +51,9 @@ function isInteractive(phase: BattlePhase): boolean {
 }
 
 function isTerminal(phase: BattlePhase): boolean {
-  return phase === 'VICTORY' || phase === 'DEFEAT' || phase === 'FLED' || phase === 'END';
+  return phase === 'VICTORY' || phase === 'DEFEAT' || phase === 'FLED' || phase === 'CAUGHT' || phase === 'END';
 }
+
 
 interface GameStore extends SaveData {
   tab: Tab;
@@ -64,6 +65,7 @@ interface GameStore extends SaveData {
   setTab: (tab: Tab) => void;
   startBattle: (biomeId: string, isBoss?: boolean) => void;
   performAction: (action: PlayerAction) => void;
+  advanceBattle: () => void;
   finishBattle: () => void;
   healAll: () => void;
   setName: (idx: number, name: string) => void;
@@ -121,6 +123,12 @@ export const useGameStore = create<GameStore>((set, get) => ({
       bs = evolveState(bs);
     }
     set({ battleState: bs });
+  },
+
+  advanceBattle: () => {
+    const bs = get().battleState;
+    if (!bs) return;
+    set({ battleState: evolveState(bs) });
   },
 
   finishBattle: () => {

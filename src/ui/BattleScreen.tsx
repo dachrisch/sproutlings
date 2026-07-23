@@ -15,6 +15,7 @@ function getCreature(id: string): CreatureDef | undefined {
 export function BattleScreen() {
   const battleState = useGameStore(s => s.battleState);
   const performAction = useGameStore(s => s.performAction);
+  const advanceBattle = useGameStore(s => s.advanceBattle);
   const finishBattle = useGameStore(s => s.finishBattle);
   const party = useGameStore(s => s.party);
   const setName = useGameStore(s => s.setName);
@@ -63,15 +64,14 @@ export function BattleScreen() {
   }, [phase, enemyDef]);
 
   useEffect(() => {
-    if (phase === 'CAUGHT' && shakePhase === 'success') {
-      const t = setTimeout(() => performAction({ type: 'FIGHT', moveId: '' }), 600);
+    if (phase === 'CAUGHT') {
+      const shakes = battleState?.catchShakes ?? 3;
+      const delay = battleState?.catchShakeResult ? 600 : 400;
+      const total = shakes * 400 + delay;
+      const t = setTimeout(() => advanceBattle(), total);
       return () => clearTimeout(t);
     }
-    if (phase === 'CAUGHT' && shakePhase === 'fail') {
-      const t = setTimeout(() => performAction({ type: 'FIGHT', moveId: '' }), 400);
-      return () => clearTimeout(t);
-    }
-  }, [phase, shakePhase, performAction]);
+  }, [phase, battleState?.catchShakes, battleState?.catchShakeResult, advanceBattle]);
 
   useEffect(() => {
     if (phase === 'END') {
@@ -81,24 +81,24 @@ export function BattleScreen() {
 
   useEffect(() => {
     if (phase === 'RESOLVING') {
-      const t = setTimeout(() => performAction({ type: 'FIGHT', moveId: '' }), 600);
+      const t = setTimeout(() => advanceBattle(), 600);
       return () => clearTimeout(t);
     }
-  }, [phase, performAction]);
+  }, [phase, advanceBattle]);
 
   useEffect(() => {
     if (phase === 'VICTORY') {
-      const t = setTimeout(() => performAction({ type: 'FIGHT', moveId: '' }), 1000);
+      const t = setTimeout(() => advanceBattle(), 1000);
       return () => clearTimeout(t);
     }
-  }, [phase, performAction]);
+  }, [phase, advanceBattle]);
 
   useEffect(() => {
     if (phase === 'FLED') {
-      const t = setTimeout(() => finishBattle(), 1500);
+      const t = setTimeout(() => advanceBattle(), 1200);
       return () => clearTimeout(t);
     }
-  }, [phase, finishBattle]);
+  }, [phase, advanceBattle]);
 
   useEffect(() => {
     if (lastEvent?.type === 'damage' && lastEvent.amount != null) {
@@ -187,7 +187,7 @@ export function BattleScreen() {
             A wild {enemyDef?.name ?? '???'} appeared!
           </div>
           <button
-            onClick={() => performAction({ type: 'FIGHT', moveId: '' })}
+            onClick={() => advanceBattle()}
             style={{
               marginTop: 16,
               padding: '14px 48px',
