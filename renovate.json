@@ -3,28 +3,30 @@
   "extends": [
     "config:recommended"
   ],
+  "semanticCommitType": "fix",
   "lockFileMaintenance": {
     "enabled": true,
-    "automerge": true,
-    "semanticCommitType": "fix"
+    "automerge": true
   },
   "packageRules": [
     {
+      "groupName": "react and react-dom",
+      "matchPackageNames": ["react", "react-dom"],
+      "automerge": true
+    },
+    {
       "matchDepTypes": ["devDependencies"],
-      "automerge": true,
-      "semanticCommitType": "fix"
+      "automerge": true
     },
     {
       "matchUpdateTypes": ["patch"],
       "matchCurrentVersion": "!/^0/",
-      "automerge": true,
-      "semanticCommitType": "fix"
+      "automerge": true
     },
     {
       "matchUpdateTypes": ["minor"],
       "matchCurrentVersion": "!/^0/",
-      "automerge": true,
-      "semanticCommitType": "fix"
+      "automerge": true
     }
   ]
 }
