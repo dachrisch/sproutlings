@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/dachrisch/sproutlings/compare/v1.0.0...v1.1.0) (2026-07-23)
+
+
+### Features
+
+* creature development system with care, training, and evolution ([#8](https://github.com/dachrisch/sproutlings/issues/8)) ([8252077](https://github.com/dachrisch/sproutlings/commit/82520777a066ed16b40feb0ea2c2f3fdf871cc61))
+
 ## 1.0.0 (2026-07-23)
 
 
