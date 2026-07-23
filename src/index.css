@@ -460,6 +460,124 @@ button {
   100% { opacity: 0; transform: translate(-50%, -120%) scale(1); }
 }
 
+/* ─── Sprite animations ─── */
+@keyframes sprite-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes sprite-pet {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.15); }
+  60% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+.sprite-bob {
+  animation: sprite-bob 2s ease-in-out infinite;
+}
+
+.sprite-pet {
+  animation: sprite-pet 0.4s ease-out !important;
+}
+
+/* ─── Care / interaction ─── */
+.care-view { padding: 16px; }
+
+.care-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.care-card {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--c-border);
+  background: var(--c-surface);
+  align-items: center;
+}
+
+.care-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.care-name-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.care-nickname {
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.care-level {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--c-text-light);
+}
+
+.care-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.care-btn {
+  padding: 8px 14px;
+  border: 2px solid var(--c-border);
+  border-radius: 16px;
+  background: var(--c-surface);
+  font-weight: 700;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: background 0.1s, transform 0.1s;
+  font-family: inherit;
+  color: var(--c-text);
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.care-btn:active { transform: scale(0.95); }
+.care-btn:disabled { opacity: 0.4; cursor: default; transform: none; }
+
+.care-btn-pet { background: #fff0f0; border-color: #ffb3b3; }
+.care-btn-feed { background: #f0fff0; border-color: #b3ffb3; }
+
+.care-happiness {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--c-text-light);
+}
+
+.care-heart-filled { color: #ff6b9d; }
+.care-heart-empty { color: #e0d6d0; }
+
+/* ─── Floating heart ─── */
+@keyframes heart-float {
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-60px) scale(1.5); }
+}
+
+.heart-float {
+  position: absolute;
+  font-size: 1.2rem;
+  pointer-events: none;
+  animation: heart-float 0.8s ease-out forwards;
+}
+
 /* ─── Reduced motion ─── */
 @media (prefers-reduced-motion: reduce) {
   .tab, .action-btn { transition: none; }

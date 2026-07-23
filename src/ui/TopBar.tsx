@@ -5,6 +5,7 @@ import creaturesData from '../data/creatures.json';
 
 const tabs: { id: Tab; label: string }[] = [
   { id: 'biomes', label: 'Explore' },
+  { id: 'care', label: 'Care' },
   { id: 'party', label: 'Party' },
   { id: 'collection', label: 'Dex' },
 ];

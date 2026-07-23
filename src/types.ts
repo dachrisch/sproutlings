@@ -58,6 +58,7 @@ export interface PartyCreature {
   def: number;
   spd: number;
   moves: string[];
+  happiness?: number;
 }
 
 export type BattlePhase =
@@ -120,7 +121,7 @@ export interface SaveData {
   balls: number;
 }
 
-export type Tab = 'battle' | 'party' | 'biomes' | 'collection';
+export type Tab = 'battle' | 'party' | 'biomes' | 'collection' | 'care';
 
 export interface Settings {
   reducedMotion: boolean;

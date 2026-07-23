@@ -5,6 +5,7 @@ import { BiomeSelect } from './ui/BiomeSelect';
 import { TopBar } from './ui/TopBar';
 import { PartyScreen } from './ui/PartyScreen';
 import { CollectionScreen } from './ui/CollectionScreen';
+import { CareScreen } from './ui/CareScreen';
 
 export default function App() {
   const tab = useGameStore(s => s.tab);
@@ -31,6 +32,7 @@ export default function App() {
         {tab === 'biomes' && <BiomeSelect />}
         {tab === 'party' && <PartyScreen />}
         {tab === 'collection' && <CollectionScreen />}
+        {tab === 'care' && <CareScreen />}
       </main>
       {notification && (
         <div className="toast" role="alert">

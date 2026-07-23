@@ -72,6 +72,8 @@ interface GameStore extends SaveData {
   addToParty: (creature: PartyCreature) => boolean;
   clearNotification: () => void;
   randomForBiome: (biomeId: string, rng: { seed: number; next(): number }) => string;
+  petCreature: (idx: number) => void;
+  feedCreature: (idx: number) => void;
 }
 
 const saved = loadSave();
@@ -218,6 +220,25 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
 
   clearNotification: () => set({ notification: null }),
+
+  petCreature: idx => {
+    const party = [...get().party];
+    if (!party[idx]) return;
+    const h = party[idx].happiness ?? 0;
+    party[idx] = { ...party[idx], happiness: Math.min(100, h + 5) };
+    set({ party });
+  },
+
+  feedCreature: idx => {
+    const party = [...get().party];
+    const c = party[idx];
+    if (!c) return;
+    const heal = 20;
+    const newHp = Math.min(c.maxHp, c.currentHp + heal);
+    const h = c.happiness ?? 0;
+    party[idx] = { ...c, currentHp: newHp, happiness: Math.min(100, h + 2) };
+    set({ party });
+  },
 
   randomForBiome: (biomeId, rng) => pickEncounter(biomeId, rng),
 }));
