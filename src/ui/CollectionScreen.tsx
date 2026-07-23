@@ -1,6 +1,7 @@
 import { useGameStore } from '../state/store';
 import creaturesData from '../data/creatures.json';
 import type { CreatureDef } from '../types';
+import { Sprite } from './components/Sprite';
 
 const creatures = creaturesData as CreatureDef[];
 
@@ -51,9 +52,7 @@ export function CollectionScreen() {
                 }}
               >
                 {discovered && (
-                  <span style={{ fontSize: '1.5rem' }}>
-                    {c.name[0]}
-                  </span>
+                  <Sprite creatureId={c.id} variant="face" size={48} />
                 )}
                 {!discovered && seen && (
                   <span style={{ fontSize: '1.2rem', opacity: 0.4 }}>?</span>
