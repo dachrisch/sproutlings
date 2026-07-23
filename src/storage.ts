@@ -1,23 +1,21 @@
-import type { GameState } from './types';
-import { SAVE_VERSION } from './constants';
+import type { SaveData } from './types';
+import { SAVE_VERSION, STORAGE_KEY } from './constants';
 
-const STORAGE_KEY = 'sproutlings-save';
-
-export function load(): GameState | null {
+export function load(): SaveData | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
-    const parsed = JSON.parse(raw) as GameState;
-    if (typeof parsed !== 'object' || parsed.version !== SAVE_VERSION) {
+    const parsed = JSON.parse(raw);
+    if (typeof parsed !== 'object' || parsed.schemaVersion !== SAVE_VERSION) {
       return null;
     }
-    return parsed;
+    return parsed as SaveData;
   } catch {
     return null;
   }
 }
 
-export function save(state: GameState): void {
+export function save(state: SaveData): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   } catch {

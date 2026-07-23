@@ -1,0 +1,41 @@
+[
+  {
+    "id": "cinder_flats",
+    "name": "Cinder Flats",
+    "unlockedBy": null,
+    "levelRange": [2, 5],
+    "encounters": [
+      { "creature": "emberfox", "weight": 40 },
+      { "creature": "pebblet", "weight": 35 },
+      { "creature": "sparkmoth", "weight": 20 },
+      { "creature": "cindermane", "weight": 5 }
+    ],
+    "boss": { "creature": "cindermane", "level": 8, "unlocks": "mossvale" }
+  },
+  {
+    "id": "mossvale",
+    "name": "Moss Vale",
+    "unlockedBy": "cinder_flats",
+    "levelRange": [5, 9],
+    "encounters": [
+      { "creature": "sproutling", "weight": 40 },
+      { "creature": "thornbush", "weight": 30 },
+      { "creature": "stoutrock", "weight": 20 },
+      { "creature": "mossquatch", "weight": 5 }
+    ],
+    "boss": { "creature": "mossquatch", "level": 12, "unlocks": "tide_shore" }
+  },
+  {
+    "id": "tide_shore",
+    "name": "Tide Shore",
+    "unlockedBy": "mossvale",
+    "levelRange": [9, 14],
+    "encounters": [
+      { "creature": "bubblefin", "weight": 40 },
+      { "creature": "shellock", "weight": 30 },
+      { "creature": "stoutrock", "weight": 20 },
+      { "creature": "riptide", "weight": 10 }
+    ],
+    "boss": { "creature": "riptide", "level": 16, "unlocks": "" }
+  }
+]
