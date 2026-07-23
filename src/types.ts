@@ -12,11 +12,20 @@ export interface Species {
   hue: number;
 }
 
+export type EvolutionStage = 'baby' | 'adult' | 'elder';
+
 export interface OwnedCreature {
   uid: string;
   speciesId: string;
   sparkle: boolean;
   hat: string | null;
+  level: number;
+  xp: number;
+  happiness: number;
+  stage: EvolutionStage;
+  training: 'none' | 'speed' | 'luck' | 'charm';
+  trainingStartedAt?: number;
+  petCooldownUntil?: number;
 }
 
 export interface ExpeditionSlot {

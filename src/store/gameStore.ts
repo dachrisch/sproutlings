@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { GameState, Tab, OwnedCreature, DexEntry, Rarity } from '../types';
+import type { GameState, Tab, OwnedCreature, DexEntry, Rarity, EvolutionStage } from '../types';
 import {
   STARTING_COINS, STARTING_SLOTS, SAVE_VERSION,
   EXPEDITION_COST, EXPEDITION_DURATION_MS,
@@ -8,6 +8,13 @@ import {
   HAT_BOX_PRICE, OFFLINE_ACCRUAL_CAP_MS, NEW_SPECIES_BONUS,
   RARITY_WEIGHTS, HATS, AUTOSAVE_INTERVAL_MS, ZOO_RATE,
   TREASURE_MIN, TREASURE_MAX,
+  XP_PER_LEVEL, MAX_LEVEL, HAPPINESS_DECAY_PER_SEC,
+  PET_HAPPINESS_BOOST, PET_COOLDOWN_MS, PLAY_HAPPINESS_BOOST, PLAY_COOLDOWN_MS,
+  HAPPINESS_MAX, BASE_XP_PER_SEC,
+  EVOLVE_LEVEL_REQUIREMENT, EVOLVE_HAPPINESS_REQUIREMENT,
+  TRAINING_DURATION_MS, TRAINING_XP_REWARD, TRAINING_COST,
+  HAPPINESS_MULTIPLIER_MIN, HAPPINESS_MULTIPLIER_MAX,
+  LEVEL_COIN_BONUS_PER_LEVEL, TRAINING_CHARM_BONUS,
 } from '../constants';
 import { SPECIES_MAP, SPECIES_BY_RARITY } from '../data/species';
 import { load, save } from '../storage';
@@ -47,6 +54,14 @@ function rollSparkle(luckLevel: number): boolean {
   return Math.random() < chance;
 }
 
+function creatureCoinRate(c: OwnedCreature): number {
+  const happinessRatio = c.happiness / HAPPINESS_MAX;
+  const happinessMult = HAPPINESS_MULTIPLIER_MIN + happinessRatio * (HAPPINESS_MULTIPLIER_MAX - HAPPINESS_MULTIPLIER_MIN);
+  const levelMult = 1 + (c.level - 1) * LEVEL_COIN_BONUS_PER_LEVEL;
+  const charmMult = c.training === 'charm' ? 1 + TRAINING_CHARM_BONUS : 1;
+  return ZOO_RATE * happinessMult * levelMult * charmMult;
+}
+
 export interface GameStore extends GameState {
   tab: Tab;
   notification: string | null;
@@ -65,6 +80,11 @@ export interface GameStore extends GameState {
   tick: () => void;
   processOffline: () => string | null;
   cycleHat: (uid: string) => void;
+  pet: (uid: string) => void;
+  play: (uid: string) => void;
+  startTraining: (uid: string, type: 'speed' | 'luck' | 'charm') => boolean;
+  collectTraining: (uid: string) => boolean;
+  evolve: (uid: string) => boolean;
 }
 
 function freshGame(): GameState {
@@ -122,6 +142,100 @@ export const useGameStore = create<GameStore>((set, get) => ({
     });
   },
 
+  pet: (uid) => {
+    const s = get();
+    const now = Date.now();
+    set({
+      creatures: s.creatures.map((c) => {
+        if (c.uid !== uid) return c;
+        if (c.petCooldownUntil && now < c.petCooldownUntil) return c;
+        return {
+          ...c,
+          happiness: Math.min(c.happiness + PET_HAPPINESS_BOOST, HAPPINESS_MAX),
+          petCooldownUntil: now + PET_COOLDOWN_MS,
+        };
+      }),
+    });
+  },
+
+  play: (uid) => {
+    const s = get();
+    const now = Date.now();
+    const c = s.creatures.find((cr) => cr.uid === uid);
+    if (!c) return;
+    if (c.petCooldownUntil && now < c.petCooldownUntil) return;
+    set({
+      creatures: s.creatures.map((cr) => {
+        if (cr.uid !== uid) return cr;
+        return {
+          ...cr,
+          happiness: Math.min(cr.happiness + PLAY_HAPPINESS_BOOST, HAPPINESS_MAX),
+          petCooldownUntil: now + PLAY_COOLDOWN_MS,
+        };
+      }),
+    });
+  },
+
+  startTraining: (uid, type) => {
+    const s = get();
+    const now = Date.now();
+    const c = s.creatures.find((cr) => cr.uid === uid);
+    if (!c || c.training !== 'none') return false;
+    if (s.coins < TRAINING_COST) return false;
+    set({
+      coins: s.coins - TRAINING_COST,
+      creatures: s.creatures.map((cr) => {
+        if (cr.uid !== uid) return cr;
+        return { ...cr, training: type, trainingStartedAt: now };
+      }),
+    });
+    return true;
+  },
+
+  collectTraining: (uid) => {
+    const s = get();
+    const now = Date.now();
+    const c = s.creatures.find((cr) => cr.uid === uid);
+    if (!c || c.training === 'none' || !c.trainingStartedAt) return false;
+    if (now - c.trainingStartedAt < TRAINING_DURATION_MS) return false;
+
+    const newXp = c.xp + TRAINING_XP_REWARD;
+    let newLevel = c.level;
+    while (newLevel < MAX_LEVEL && newXp >= newLevel * XP_PER_LEVEL) {
+      newLevel++;
+    }
+
+    set({
+      creatures: s.creatures.map((cr) => {
+        if (cr.uid !== uid) return cr;
+        return { ...cr, training: 'none' as const, trainingStartedAt: undefined, xp: newXp, level: newLevel };
+      }),
+    });
+    return true;
+  },
+
+  evolve: (uid) => {
+    const s = get();
+    const c = s.creatures.find((cr) => cr.uid === uid);
+    if (!c) return false;
+
+    const stages: EvolutionStage[] = ['baby', 'adult', 'elder'];
+    const curIdx = stages.indexOf(c.stage);
+    if (curIdx >= stages.length - 1) return false;
+    const nextStage = stages[curIdx + 1];
+    const reqLevel = EVOLVE_LEVEL_REQUIREMENT[nextStage];
+    if (c.level < reqLevel) return false;
+    if (c.happiness < EVOLVE_HAPPINESS_REQUIREMENT) return false;
+
+    set({
+      creatures: s.creatures.map((cr) => {
+        if (cr.uid !== uid) return cr;
+        return { ...cr, stage: nextStage };
+      }),
+    });
+    return true;
+  },
+
   startExpedition: (slotId) => {
     const s = get();
     const slot = s.expeditionSlots.find((sl) => sl.id === slotId);
@@ -155,6 +269,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
       speciesId: species.id,
       sparkle,
       hat: null,
+      level: 1,
+      xp: 0,
+      happiness: 50,
+      stage: 'baby',
+      training: 'none',
     };
 
     const prev = s.dex[species.id];
@@ -250,8 +369,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const elapsed = (now - s.lastUpdate) / 1000;
     if (elapsed < 0.5) return;
 
-    const zooCount = s.creatures.length;
-    const coinsGained = zooCount * ZOO_RATE * elapsed;
+    const coinsGained = s.creatures.reduce((sum, c) => sum + creatureCoinRate(c) * elapsed, 0);
 
     const updatedSlots = s.expeditionSlots.map((slot) => {
       if (slot.state === 'exploring' && slot.startedAt && slot.durationMs) {
@@ -262,9 +380,22 @@ export const useGameStore = create<GameStore>((set, get) => ({
       return slot;
     });
 
+    const updatedCreatures = s.creatures.map((c) => {
+      const xpGain = BASE_XP_PER_SEC * elapsed;
+      let newXp = c.xp + xpGain;
+      let newLevel = c.level;
+      while (newLevel < MAX_LEVEL && newXp >= newLevel * XP_PER_LEVEL) {
+        newLevel++;
+      }
+      const happinessDecay = HAPPINESS_DECAY_PER_SEC * elapsed;
+      const newHappiness = Math.max(0, c.happiness - happinessDecay);
+      return { ...c, xp: newXp, level: newLevel, happiness: newHappiness };
+    });
+
     set({
       coins: s.coins + coinsGained,
       expeditionSlots: updatedSlots,
+      creatures: updatedCreatures,
       lastUpdate: now,
     });
   },
@@ -276,8 +407,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const elapsed = Math.min(rawElapsed, OFFLINE_ACCRUAL_CAP_MS) / 1000;
     if (elapsed < 1) return null;
 
-    const zooCount = s.creatures.length;
-    const coinsGained = zooCount * ZOO_RATE * elapsed;
+    const coinsGained = s.creatures.reduce((sum, c) => sum + creatureCoinRate(c) * elapsed, 0);
 
     const updatedSlots = s.expeditionSlots.map((slot) => {
       if (slot.state === 'exploring' && slot.startedAt && slot.durationMs) {
@@ -288,6 +418,18 @@ export const useGameStore = create<GameStore>((set, get) => ({
       return slot;
     });
 
+    const updatedCreatures = s.creatures.map((c) => {
+      const xpGain = BASE_XP_PER_SEC * elapsed;
+      let newXp = c.xp + xpGain;
+      let newLevel = c.level;
+      while (newLevel < MAX_LEVEL && newXp >= newLevel * XP_PER_LEVEL) {
+        newLevel++;
+      }
+      const happinessDecay = HAPPINESS_DECAY_PER_SEC * elapsed;
+      const newHappiness = Math.max(0, c.happiness - happinessDecay);
+      return { ...c, xp: newXp, level: newLevel, happiness: newHappiness };
+    });
+
     const coinFloor = Math.floor(s.coins + coinsGained) - Math.floor(s.coins);
     const returnedCount = updatedSlots.filter(
       (sl) => sl.state === 'returned' && s.expeditionSlots.find((os) => os.id === sl.id)?.state !== 'returned'
@@ -296,6 +438,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     set({
       coins: s.coins + coinsGained,
       expeditionSlots: updatedSlots,
+      creatures: updatedCreatures,
       lastUpdate: now,
     });
 

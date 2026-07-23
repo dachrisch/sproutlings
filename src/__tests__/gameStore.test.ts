@@ -169,7 +169,7 @@ describe('tick', () => {
 
   it('accrues coins from zoo creatures', () => {
     useGameStore.setState({
-      creatures: [{ uid: 't1', speciesId: 'mossling', sparkle: false, hat: null }],
+      creatures: [{ uid: 't1', speciesId: 'mossling', sparkle: false, hat: null, level: 1, xp: 0, happiness: 50, stage: 'baby', training: 'none' }],
       lastUpdate: Date.now() - 2000,
     });
     useGameStore.getState().tick();
@@ -186,7 +186,7 @@ describe('processOffline', () => {
 
   it('accrues coins for offline time', () => {
     useGameStore.setState({
-      creatures: [{ uid: 't1', speciesId: 'mossling', sparkle: false, hat: null }],
+      creatures: [{ uid: 't1', speciesId: 'mossling', sparkle: false, hat: null, level: 1, xp: 0, happiness: 50, stage: 'baby', training: 'none' }],
       lastUpdate: Date.now() - 30_000,
       coins: 0,
     });
@@ -197,13 +197,15 @@ describe('processOffline', () => {
 
   it('caps offline time at 8 hours', () => {
     useGameStore.setState({
-      creatures: [{ uid: 't1', speciesId: 'sunny', sparkle: false, hat: null }],
+      creatures: [{ uid: 't1', speciesId: 'sunny', sparkle: false, hat: null, level: 1, xp: 0, happiness: 50, stage: 'baby', training: 'none' }],
       lastUpdate: Date.now() - 100_000_000,
       coins: 0,
     });
     useGameStore.getState().processOffline();
-    const maxEarn = ZOO_RATE * 8 * 60 * 60;
-    expect(useGameStore.getState().coins).toBeLessThanOrEqual(maxEarn + 1);
+    const happinessMult = 0.5 + (50 / 100) * 1.5;
+    const effectiveRate = ZOO_RATE * happinessMult;
+    const maxEarn = effectiveRate * 8 * 60 * 60;
+    expect(useGameStore.getState().coins).toBeLessThanOrEqual(Math.ceil(maxEarn));
   });
 });
 

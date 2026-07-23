@@ -1,5 +1,5 @@
 import type { JSX } from 'react';
-import type { Species } from '../types';
+import type { Species, EvolutionStage } from '../types';
 
 interface CreatureSVGProps {
   species: Species;
@@ -7,6 +7,7 @@ interface CreatureSVGProps {
   hat?: string | null;
   size?: number;
   animate?: boolean;
+  stage?: EvolutionStage;
 }
 
 function bodyPath(shape: string, hue: number): { path: JSX.Element; faceY: number } {
@@ -184,23 +185,50 @@ function HatOverlay({ hat }: { hat: string }) {
   }
 }
 
-export function CreatureSVG({ species, sparkle, hat, size = 64, animate }: CreatureSVGProps) {
+const STAGE_SCALE: Record<EvolutionStage, number> = {
+  baby: 0.8,
+  adult: 1.0,
+  elder: 1.2,
+};
+
+function StageEffects({ stage }: { stage: EvolutionStage }) {
+  if (stage === 'elder') {
+    return (
+      <g>
+        <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(245,179,66,0.3)" strokeWidth="2" />
+        <text x="50" y="12" fontSize="10" fill="#f5b342" textAnchor="middle" fontWeight="bold">✦</text>
+        <text x="50" y="92" fontSize="10" fill="#f5b342" textAnchor="middle" fontWeight="bold">✦</text>
+        <text x="12" y="50" fontSize="10" fill="#f5b342" textAnchor="middle" fontWeight="bold">✦</text>
+        <text x="88" y="50" fontSize="10" fill="#f5b342" textAnchor="middle" fontWeight="bold">✦</text>
+      </g>
+    );
+  }
+  return null;
+}
+
+export function CreatureSVG({ species, sparkle, hat, size = 64, animate, stage = 'adult' }: CreatureSVGProps) {
   let hue = species.hue;
   if (sparkle) hue = (hue + 30) % 360;
   const { path, faceY } = bodyPath(species.shape, hue);
 
+  const scale = STAGE_SCALE[stage];
+  const adjustedSize = size;
+
   return (
     <svg
-      width={size}
-      height={size}
+      width={adjustedSize}
+      height={adjustedSize}
       viewBox="0 0 100 100"
       xmlns="http://www.w3.org/2000/svg"
       className={animate ? 'creature-bob' : undefined}
     >
-      {path}
-      <Face y={faceY} />
-      {sparkle && <SparkleOverlay />}
-      {hat && <HatOverlay hat={hat} />}
+      <g transform={`scale(${scale}) translate(${50 * (1 - scale) / scale}, ${50 * (1 - scale) / scale})`}>
+        {path}
+        <Face y={stage === 'baby' ? faceY + 4 : faceY} />
+        {sparkle && <SparkleOverlay />}
+        {hat && <HatOverlay hat={hat} />}
+      </g>
+      <StageEffects stage={stage} />
     </svg>
   );
 }

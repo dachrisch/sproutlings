@@ -40,4 +40,33 @@ export const RARITY_WEIGHTS: Record<string, { weight: number }> = {
 
 export const HATS = ['crown', 'flower', 'bow', 'tophat', 'ribbon'] as const;
 
-export const SAVE_VERSION = 3;
+export const SAVE_VERSION = 4;
+
+// Creature development
+export const XP_PER_LEVEL = 100;
+export const MAX_LEVEL = 10;
+export const HAPPINESS_DECAY_PER_SEC = 0.002;
+export const PET_HAPPINESS_BOOST = 15;
+export const PET_COOLDOWN_MS = 5_000;
+export const PLAY_HAPPINESS_BOOST = 25;
+export const PLAY_COOLDOWN_MS = 30_000;
+export const HAPPINESS_MAX = 100;
+export const BASE_XP_PER_SEC = 0.02;
+
+export const EVOLVE_LEVEL_REQUIREMENT: Record<string, number> = {
+  baby: 3,
+  adult: 7,
+  elder: MAX_LEVEL,
+};
+export const EVOLVE_HAPPINESS_REQUIREMENT = 60;
+
+export const TRAINING_DURATION_MS = 45_000;
+export const TRAINING_XP_REWARD = 50;
+export const TRAINING_COST = 10;
+
+export const HAPPINESS_MULTIPLIER_MIN = 0.5;
+export const HAPPINESS_MULTIPLIER_MAX = 2.0;
+export const LEVEL_COIN_BONUS_PER_LEVEL = 0.15;
+export const TRAINING_SPEED_BONUS = 0.2;
+export const TRAINING_LUCK_BONUS = 0.2;
+export const TRAINING_CHARM_BONUS = 0.2;
