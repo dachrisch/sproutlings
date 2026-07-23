@@ -57,6 +57,8 @@ START EXPEDITION (costs coins) ──▶ wait in real time ──▶ COLLECT
 ## Build
 - `npm run dev` — dev server
 - `npm run build` — produces static `dist/`
+- `npm run lint` — oxlint
+- `npm run test` — vitest (no test files yet; passes via `passWithNoTests`)
 
 ## Milestone status
 - ✅ **Phase 0 — Scaffold** (original): Vite+React+TS project, Zustand store, storage.ts, tab shell, constants, species data, production build.
@@ -69,6 +71,12 @@ START EXPEDITION (costs coins) ──▶ wait in real time ──▶ COLLECT
 - `storage.ts` is the only file that touches localStorage; swap it for a backend later.
 - `Rarity`, `Shape`, `Species`, `ExpeditionSlot`, `OwnedCreature`, `DexEntry`, `GameState`, `Settings`, `Tab` in `types.ts`.
 - No decay/neglect/cooldowns — creatures just exist and are cute. The only wait is expedition duration.
+
+## CI/CD
+- Any branch push → `.github/workflows/ci_branch.yaml`: node build/lint/test, Docker image build (nginx serving `dist/`), container health-check test.
+- Tag push (by release-please, not manual) → `.github/workflows/ci.yaml`: same, plus push image to Docker Hub as `dachrisch/sproutlings:<tag>` and `:latest`.
+- `release-please` cuts versioned releases with changelogs from conventional-commit messages on `master`; Renovate bumps use `fix:` commits so they cascade into real releases automatically.
+- Full rationale: `docs/superpowers/specs/2026-07-22-ci-cd-infrastructure-design.md`.
 
 ## Spec doc
 See `docs/sproutlings-spec.md` for full game design.
