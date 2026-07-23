@@ -20,8 +20,6 @@ export function BattleScreen() {
   const party = useGameStore(s => s.party);
   const setName = useGameStore(s => s.setName);
   const balls = useGameStore(s => s.balls);
-  const setTab = useGameStore(s => s.setTab);
-  const healAll = useGameStore(s => s.healAll);
 
   const [nickname, setNickname] = useState('');
   const [showSwitch, setShowSwitch] = useState(false);
@@ -143,9 +141,8 @@ export function BattleScreen() {
   }, [enemyCreature, finishBattle, nickname, party, setName]);
 
   const handleDefeatRetry = useCallback(() => {
-    healAll();
-    setTab('biomes');
-  }, [healAll, setTab]);
+    finishBattle();
+  }, [finishBattle]);
 
   const handlePopupDone = useCallback((id: number) => {
     setPopups(prev => prev.filter(p => p.id !== id));

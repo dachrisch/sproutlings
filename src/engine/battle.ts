@@ -236,7 +236,7 @@ export function evolveState(state: BattleState): BattleState {
     case 'CHECK_FAINT':
       return evolveCheckFaint(state);
     case 'VICTORY':
-      return evolveVictory(state);
+      return { ...state, phase: 'END' as const };
     case 'CAUGHT':
       return { ...state, phase: 'NAME_PROMPT' as const };
     case 'FLED':
@@ -333,11 +333,11 @@ function evolveCheckFaint(state: BattleState): BattleState {
 
   if (state.enemyCreature.currentHp <= 0) {
     events.push({ type: 'faint', target: 'enemy', text: `${creatureName(state.enemyCreature.creatureId)} fainted!` });
-    return {
+    return applyVictoryRewards({
       ...state,
       phase: 'VICTORY' as const,
       events: [...state.events, ...events],
-    };
+    });
   }
 
   if (state.playerCreature.currentHp <= 0) {
@@ -352,7 +352,7 @@ function evolveCheckFaint(state: BattleState): BattleState {
   return { ...state, phase: 'PLAYER_ACTION' as const };
 }
 
-function evolveVictory(state: BattleState): BattleState {
+function applyVictoryRewards(state: BattleState): BattleState {
   const events: BattleEvent[] = [];
   const baseXp = creatureBaseXp(state.enemyCreature.creatureId);
   const gained = xpGainValue(baseXp, state.enemyCreature.level);
@@ -384,7 +384,6 @@ function evolveVictory(state: BattleState): BattleState {
     xpGained: gained,
     xpTotal: finalCreature.xp,
     unlockedMove,
-    phase: 'END' as const,
     events: [...state.events, ...events],
   };
 }

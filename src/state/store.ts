@@ -124,6 +124,16 @@ export const useGameStore = create<GameStore>((set, get) => ({
       if (isInteractive(bs.phase) || isTerminal(bs.phase)) break;
       bs = evolveState(bs);
     }
+
+    if (bs.phase === 'FORCE_SWITCH') {
+      const hasBackup = get().party.some(
+        p => p.currentHp > 0 && p.creatureId !== bs.playerCreature.creatureId,
+      );
+      if (!hasBackup) {
+        bs = { ...bs, phase: 'DEFEAT' as const };
+      }
+    }
+
     set({ battleState: bs });
   },
 
@@ -196,6 +206,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       box: newBox,
       bossWins: newBossWins,
       notification,
+      tab: 'biomes',
     });
   },
 
