@@ -23,7 +23,7 @@ export function PartyScreen() {
         <button
           className="action-btn"
           style={{ marginTop: 16 }}
-          onClick={() => setTab('biomes')}
+            onClick={() => setTab('explore')}
           type="button"
         >
           Explore

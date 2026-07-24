@@ -81,7 +81,7 @@ const persisted: SaveData = saved ?? freshSave();
 
 export const useGameStore = create<GameStore>((set, get) => ({
   ...persisted,
-  tab: 'biomes',
+  tab: 'home' as Tab,
   battleState: null,
   notification: null,
   currentBiome: null,
@@ -206,7 +206,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       box: newBox,
       bossWins: newBossWins,
       notification,
-      tab: 'biomes',
+  tab: 'home',
     });
   },
 

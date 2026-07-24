@@ -121,7 +121,7 @@ export interface SaveData {
   balls: number;
 }
 
-export type Tab = 'battle' | 'party' | 'biomes' | 'collection' | 'care';
+export type Tab = 'battle' | 'home' | 'explore' | 'party' | 'collection';
 
 export interface Settings {
   reducedMotion: boolean;

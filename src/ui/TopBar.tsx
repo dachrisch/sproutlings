@@ -4,8 +4,8 @@ import type { Tab, CreatureDef } from '../types';
 import creaturesData from '../data/creatures.json';
 
 const tabs: { id: Tab; label: string }[] = [
-  { id: 'biomes', label: 'Explore' },
-  { id: 'care', label: 'Care' },
+  { id: 'home', label: '🏠' },
+  { id: 'explore', label: 'Explore' },
   { id: 'party', label: 'Party' },
   { id: 'collection', label: 'Dex' },
 ];

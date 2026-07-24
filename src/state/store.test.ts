@@ -60,7 +60,7 @@ describe('performAction - party-wipe handling', () => {
 });
 
 describe('finishBattle', () => {
-  it('resets tab to biomes and clears battleState after victory', () => {
+  it('resets tab to home and clears battleState after victory', () => {
     const player = makeCreature({ currentHp: 40 });
     useGameStore.setState({
       party: [player],
@@ -79,11 +79,11 @@ describe('finishBattle', () => {
 
     const state = useGameStore.getState();
     expect(state.battleState).toBeNull();
-    expect(state.tab).toBe('biomes');
+    expect(state.tab).toBe('home');
     expect(state.notification).toContain('defeated');
   });
 
-  it('heals the party and resets tab to biomes after defeat', () => {
+  it('heals the party and resets tab to home after defeat', () => {
     const player = makeCreature({ currentHp: 0 });
     useGameStore.setState({
       party: [player],
@@ -100,7 +100,7 @@ describe('finishBattle', () => {
 
     const state = useGameStore.getState();
     expect(state.battleState).toBeNull();
-    expect(state.tab).toBe('biomes');
+    expect(state.tab).toBe('home');
     expect(state.notification).toBe('You were defeated...');
     expect(state.party[0].currentHp).toBe(state.party[0].maxHp);
   });
