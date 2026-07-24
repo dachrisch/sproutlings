@@ -158,6 +158,15 @@ export function BattleScreen() {
   const enemyOpacity = fainted === 'enemy' ? 0.3 : 1;
   const playerOpacity = fainted === 'player' ? 0.3 : 1;
 
+  const lastDamage = lastEvent?.type === 'damage' ? lastEvent : null;
+  const enemyAnimState = fainted === 'enemy'
+    ? 'none'
+    : lastDamage?.target === 'enemy' ? 'hit' : lastDamage?.target === 'player' ? 'attack' : 'idle';
+  const playerAnimState = fainted === 'player'
+    ? 'none'
+    : lastDamage?.target === 'player' ? 'hit' : lastDamage?.target === 'enemy' ? 'attack' : 'idle';
+  const eventKey = battleState.events.length;
+
   const renderTopArea = () => (
     <div
       style={{
@@ -204,7 +213,13 @@ export function BattleScreen() {
         </>
       ) : (
         <div style={{ opacity: enemyOpacity, transition: 'opacity 0.5s' }}>
-          <Sprite creatureId={enemyCreature.creatureId} variant="front" size={96} />
+          <Sprite
+            key={`enemy-sprite-${eventKey}`}
+            creatureId={enemyCreature.creatureId}
+            variant="front"
+            size={96}
+            animationState={enemyAnimState}
+          />
           {shakePhase !== 'idle' && (
             <div
               style={{
@@ -273,7 +288,13 @@ export function BattleScreen() {
         transition: 'opacity 0.5s',
       }}
     >
-      <Sprite creatureId={playerCreature.creatureId} variant="back" size={72} />
+      <Sprite
+        key={`player-sprite-${eventKey}`}
+        creatureId={playerCreature.creatureId}
+        variant="back"
+        size={72}
+        animationState={playerAnimState}
+      />
       <div
         style={{
           display: 'flex',

@@ -1,14 +1,6 @@
-import { useState, useEffect, useMemo } from 'react';
-import type { MonsterType } from '../../types';
-import type { CreatureDef } from '../../types';
-import creatures from '../../data/creatures.json';
+import { useEffect, useMemo, useState } from 'react';
 
-const TYPE_COLORS: Record<MonsterType, string> = {
-  fire: '#ff6b35',
-  water: '#4a9fff',
-  grass: '#6abf69',
-  stone: '#c4956a',
-};
+export type SpriteAnimationState = 'idle' | 'attack' | 'hit' | 'none';
 
 interface SpriteProps {
   creatureId: string;
@@ -18,14 +10,28 @@ interface SpriteProps {
   animate?: boolean;
   frame?: number;
   onFrameChange?: () => void;
+  animationState?: SpriteAnimationState;
 }
 
-export function Sprite({ creatureId, variant, size = 64, className, animate = false, frame = 0, onFrameChange }: SpriteProps) {
-  const creature = useMemo(
-    () => (creatures as CreatureDef[]).find(c => c.id === creatureId),
-    [creatureId],
-  );
+/** Deterministic per-creature phase offset so a group of sprites doesn't breathe in lockstep. */
+function idlePhaseOffset(creatureId: string): number {
+  let hash = 0;
+  for (let i = 0; i < creatureId.length; i++) {
+    hash = (hash * 31 + creatureId.charCodeAt(i)) % 2400;
+  }
+  return -(hash / 1000);
+}
 
+export function Sprite({
+  creatureId,
+  variant,
+  size = 64,
+  className,
+  animate = false,
+  frame = 0,
+  onFrameChange,
+  animationState = 'idle',
+}: SpriteProps) {
   const [petted, setPetted] = useState(false);
 
   useEffect(() => {
@@ -34,25 +40,39 @@ export function Sprite({ creatureId, variant, size = 64, className, animate = fa
     return () => clearInterval(t);
   }, [animate, variant, onFrameChange]);
 
-  const typeColor = creature ? TYPE_COLORS[creature.type] : '#999999';
   const img = frame % 2 === 1 && variant === 'face'
     ? `${creatureId}_face2.png`
     : `${creatureId}_${variant}.png`;
 
+  const idleDelay = useMemo(() => idlePhaseOffset(creatureId), [creatureId]);
+
+  const animationClasses = animationState === 'none'
+    ? []
+    : animationState === 'idle'
+      ? ['sprite-idle']
+      : ['sprite-idle', `sprite-${animationState}`];
+
+  // animation-delay values line up positionally with the animation-name list
+  // declared for each class combo in index.css (idle first, reaction second).
+  const animationDelay = animationState === 'none'
+    ? undefined
+    : animationState === 'idle'
+      ? `${idleDelay}s`
+      : `${idleDelay}s, 0s`;
+
   return (
     <div
-      className={[className, animate ? 'sprite-bob' : '', petted ? 'sprite-pet' : ''].filter(Boolean).join(' ')}
+      className={[className, ...animationClasses, petted ? 'sprite-pet' : ''].filter(Boolean).join(' ')}
       style={{
         width: size,
         height: size,
-        borderRadius: '50%',
         backgroundImage: `url(/assets/creatures/${img})`,
         backgroundSize: 'contain',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
         imageRendering: 'pixelated',
-        backgroundColor: typeColor,
         opacity: variant === 'back' ? 0.9 : 1,
+        animationDelay,
         flexShrink: 0,
         cursor: 'pointer',
         transition: 'transform 0.15s',

@@ -481,6 +481,37 @@ button {
   animation: sprite-pet 0.4s ease-out !important;
 }
 
+/* ─── Sprite: idle breathing + battle reactions ─── */
+@keyframes sprite-idle {
+  0%, 100% { transform: translateY(0) scaleY(1) scaleX(1); }
+  50% { transform: translateY(-2px) scaleY(1.04) scaleX(0.98); }
+}
+
+@keyframes sprite-attack {
+  0%, 100% { transform: translateX(0); }
+  40% { transform: translateX(14px) scale(1.06); }
+}
+
+@keyframes sprite-hit {
+  0%, 100% { filter: none; transform: translateX(0); }
+  25% { filter: brightness(3) saturate(0); transform: translateX(-6px); }
+}
+
+.sprite-idle {
+  animation: sprite-idle 2.4s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+
+.sprite-idle.sprite-attack {
+  animation: sprite-idle 2.4s ease-in-out infinite, sprite-attack 0.35s ease-out;
+  transform-origin: center bottom;
+}
+
+.sprite-idle.sprite-hit {
+  animation: sprite-idle 2.4s ease-in-out infinite, sprite-hit 0.3s steps(2, end) 2;
+  transform-origin: center bottom;
+}
+
 /* ─── Care / interaction ─── */
 .care-view { padding: 16px; }
 
@@ -584,6 +615,7 @@ button {
   .tab:active, .action-btn:active { transform: none; }
   .toast { animation: none; }
   .dex-progress-fill { transition: none; }
+  .sprite-idle, .sprite-attack, .sprite-hit { animation: none; }
 }
 
 /* ─── Home Screen ─── */
