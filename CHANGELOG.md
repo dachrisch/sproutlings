@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.2](https://github.com/dachrisch/sproutlings/compare/v1.4.1...v1.4.2) (2026-07-24)
+
+
+### Bug Fixes
+
+* stop clipping creature sprites into colored bubbles ([5cdd0ee](https://github.com/dachrisch/sproutlings/commit/5cdd0eec4ef0b61b6d8659cfac5d37fe1fcb78a1))
+
 ## [1.4.1](https://github.com/dachrisch/sproutlings/compare/v1.4.0...v1.4.1) (2026-07-24)
 
 
