@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/dachrisch/sproutlings/compare/v1.4.0...v1.4.1) (2026-07-24)
+
+
+### Bug Fixes
+
+* bump service worker cache to v2 to invalidate stale assets ([36d1470](https://github.com/dachrisch/sproutlings/commit/36d147057bc9984acc6fe4a80863ab97fb4e3cee))
+
 ## [1.4.0](https://github.com/dachrisch/sproutlings/compare/v1.3.1...v1.4.0) (2026-07-24)
 
 
