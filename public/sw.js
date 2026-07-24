@@ -1,4 +1,4 @@
-const CACHE = 'monster-collector-v1';
+const CACHE = 'monster-collector-v2';
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(['/'])).then(() => self.skipWaiting()));
 });
