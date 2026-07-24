@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/dachrisch/sproutlings/compare/v1.3.1...v1.4.0) (2026-07-24)
+
+
+### Features
+
+* replace tabbed UI with living Home screen ([26156e8](https://github.com/dachrisch/sproutlings/commit/26156e8361aaec9fdfce92a790228e24c57f1eb9))
+
 ## [1.3.1](https://github.com/dachrisch/sproutlings/compare/v1.3.0...v1.3.1) (2026-07-23)
 
 
