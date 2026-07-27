@@ -6,7 +6,7 @@ function createFakeContext() {
   const ctx = {
     fillStyle: '',
     fillRect(x: number, y: number, w: number, h: number) {
-      calls.push({ style: ctx.fillStyle, x, y, w, h });
+      calls.push({ style: ctx.fillStyle as string, x, y, w, h });
     },
   } as unknown as CanvasRenderingContext2D;
   return { ctx, calls };
