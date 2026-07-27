@@ -1,15 +1,17 @@
 # Sproutlings
 
-A cozy, kid-friendly creature-collector idle game. Plant seeds, grow eggs, hatch cute creatures, earn coins offline, and complete your collection.
+A cozy, kid-friendly Game Boy-style Tamagotchi. Hatch a little monster and keep it fed, happy, clean, and rested — in real time, even while you're away.
 
 Built for a self-hosted personal website — fully static, no backend, no ads, no tracking.
 
 ## Stack
 
-- **Build:** Vite + React 18 + TypeScript
-- **State:** Zustand (single store, autosaves to localStorage)
+- **Build:** Vite + TypeScript (no UI framework)
+- **Rendering:** Phaser 4
+- **State:** a single store, autosaves to localStorage
 - **Styling:** Plain CSS (phone-first, ~360px responsive)
-- **Art:** Procedural SVG (no raster assets)
+- **Art:** Procedural pixel sprites, 4-shade Game Boy green palette (no raster assets)
+- **Audio:** Synthesized chiptune via Web Audio (no audio files)
 
 ## Quick start
 
@@ -23,19 +25,17 @@ Production output is a `dist/` folder of static assets — serve with any static
 
 ## How to play
 
-1. **Plant** a seed in an empty plot
-2. **Water** to speed up growth
-3. **Hatch** the egg to reveal a creature
-4. Creatures earn **coins** while you're away
-5. Spend coins on seeds, plots, luck upgrades, and hats
-6. Complete the **Collection** (16 species + shiny Sparkle variants)
+1. **Tap the egg** to hatch a monster (randomly picked from a small roster)
+2. **Feed / Play / Clean / Sleep** to keep its four needs up
+3. Needs drop over real time, even while the app is closed
+4. Neglect a need for too long and the monster **runs away** — tap a new egg and start again
 
 ## Design
 
-Spec and tuning: [`docs/sproutlings-spec.md`](docs/sproutlings-spec.md)
+Spec: [`docs/superpowers/specs/2026-07-28-gameboy-tamagotchi-pivot-design.md`](docs/superpowers/specs/2026-07-28-gameboy-tamagotchi-pivot-design.md)
 
 - All tuning values live in `src/constants.ts` — balancing is a one-file change
-- Species are data-only in `src/data/species.ts`
+- Species are pixel-coordinate data in `src/data/species.ts` — no art files
 - Fully offline, COPPA-safe by construction (no external calls, no accounts)
 
 ## License
