@@ -1,26 +1,28 @@
-type Listener<T> = (payload: T) => void;
+/* oxlint-disable typescript/no-explicit-any */
 
-class EventBus {
-  private listeners = new Map<string, Set<Listener<unknown>>>();
+type Listener = (...args: any[]) => void;
 
-  on<T>(event: string, listener: Listener<T>): void {
-    if (!this.listeners.has(event)) this.listeners.set(event, new Set());
-    this.listeners.get(event)!.add(listener as Listener<unknown>);
-  }
+type Entry = { fn: Listener; ctx?: unknown };
 
-  off<T>(event: string, listener: Listener<T>): void {
-    this.listeners.get(event)?.delete(listener as Listener<unknown>);
-  }
-
-  emit<T>(event: string, payload?: T): void {
-    this.listeners.get(event)?.forEach((listener) => listener(payload as unknown));
-  }
-}
-
-export const bus = new EventBus();
+const listeners = new Map<string, Entry[]>();
 
 export const EVENTS = {
-  MONSTER_UPDATED: 'monster-updated',
-  ACTION: 'action',
-  RUN_AWAY: 'run-away',
+  MONSTER_UPDATED: 'MONSTER_UPDATED',
+  ACTION: 'ACTION',
+  RUN_AWAY: 'RUN_AWAY',
 } as const;
+
+export const bus = {
+  on(event: string, fn: Listener, ctx?: unknown): void {
+    if (!listeners.has(event)) listeners.set(event, []);
+    listeners.get(event)!.push({ fn, ctx });
+  },
+  off(event: string, fn: Listener, _ctx?: unknown): void {
+    const entries = listeners.get(event);
+    if (!entries) return;
+    listeners.set(event, entries.filter((e) => e.fn !== fn));
+  },
+  emit(event: string, ...args: any[]): void {
+    listeners.get(event)?.forEach(({ fn }) => fn(...args));
+  },
+};
