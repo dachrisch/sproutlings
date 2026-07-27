@@ -2,10 +2,32 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#306230" />
+    <link rel="manifest" href="/manifest.json" />
     <title>Sproutlings</title>
   </head>
   <body>
-    <div id="game"></div>
+    <div class="device">
+      <div id="game"></div>
+      <div class="needs" id="needs" hidden>
+        <div class="need"><span class="need-icon" aria-hidden="true">🍎</span><div class="need-bar"><div class="need-fill" id="fill-hunger"></div></div></div>
+        <div class="need"><span class="need-icon" aria-hidden="true">😊</span><div class="need-bar"><div class="need-fill" id="fill-happiness"></div></div></div>
+        <div class="need"><span class="need-icon" aria-hidden="true">🧼</span><div class="need-bar"><div class="need-fill" id="fill-cleanliness"></div></div></div>
+        <div class="need"><span class="need-icon" aria-hidden="true">⚡</span><div class="need-bar"><div class="need-fill" id="fill-energy"></div></div></div>
+      </div>
+      <div class="buttons" id="buttons" hidden>
+        <button type="button" data-action="hunger">Feed</button>
+        <button type="button" data-action="happiness">Play</button>
+        <button type="button" data-action="cleanliness">Clean</button>
+        <button type="button" data-action="energy">Sleep</button>
+      </div>
+    </div>
     <script type="module" src="/src/main.ts"></script>
+    <script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js');
+}
+</script>
   </body>
 </html>

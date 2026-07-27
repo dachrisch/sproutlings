@@ -1,11 +1,11 @@
 {
-  "name": "Monster Collector",
-  "short_name": "Monsters",
-  "description": "Catch and collect creatures in turn-based battles",
+  "name": "Sproutlings",
+  "short_name": "Sproutlings",
+  "description": "A pocket monster that needs feeding, playing, cleaning, and sleep — Game Boy style.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#e8f5e0",
-  "theme_color": "#6abf69",
+  "background_color": "#9bbc0f",
+  "theme_color": "#306230",
   "icons": [
     { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
   ]
