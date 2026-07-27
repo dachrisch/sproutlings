@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.5.0](https://github.com/dachrisch/sproutlings/compare/v1.4.3...v1.5.0) (2026-07-27)
+
+
+### Features
+
+* add 3-species pixel-art roster ([660a4d0](https://github.com/dachrisch/sproutlings/commit/660a4d0cccc40b744498f16469a077a6df0ad9af))
+* add BootScene building species textures from pixel data ([fea5735](https://github.com/dachrisch/sproutlings/commit/fea573577e55f0a3c5a9f6a0ddc89fc9e907b581))
+* add core types and tuning constants ([b1cfa3c](https://github.com/dachrisch/sproutlings/commit/b1cfa3c9d281f9249e836cc7af241a2385a4e0ae))
+* add event bus and mutable save store ([d277de4](https://github.com/dachrisch/sproutlings/commit/d277de43a42e3760d9fcaca4f82cbafedf0fb64e))
+* add Game Boy bezel DOM shell, need bars, and PWA assets ([b33d432](https://github.com/dachrisch/sproutlings/commit/b33d432b48e796db914b2f8f3d7ac955e58fdde2))
+* add HatchScene tap-the-egg flow ([fed19fd](https://github.com/dachrisch/sproutlings/commit/fed19fd8829e5b46a845850b5fcc66c6b0926592))
+* add PetScene with mood-driven idle animation and dot-matrix grid ([e8fbf59](https://github.com/dachrisch/sproutlings/commit/e8fbf5972164b14fec86637e1d18e33f54d1f0fc))
+* add pixel-shape helpers for procedural sprite data ([b480793](https://github.com/dachrisch/sproutlings/commit/b48079311178fafe9d32ae0f8e0a48cc5b2d0d73))
+* add pure monster need-decay, action, and run-away logic ([4b9572d](https://github.com/dachrisch/sproutlings/commit/4b9572dfbe81c34519290470a3be8fcfe7b2f425))
+* add pure pixel-cell-to-canvas draw helper ([eeb6613](https://github.com/dachrisch/sproutlings/commit/eeb661304c87ebdaad5483f3c3156b7e926d0ed7))
+* add versioned localStorage save/load ([226e13e](https://github.com/dachrisch/sproutlings/commit/226e13e7b935a337e63f78851f3418d63bdece7d))
+* add Web Audio synth for blips and background loop ([1cedba1](https://github.com/dachrisch/sproutlings/commit/1cedba11c9bf94820f646d432f117453dfaaa0fc))
+* wire DOM buttons and need bars to the store ([58fe374](https://github.com/dachrisch/sproutlings/commit/58fe3740d129c14e8decceaa372cd3e9dc3b5a73))
+* wire Phaser game, controls, audio, and store together ([d60e2d3](https://github.com/dachrisch/sproutlings/commit/d60e2d3f26e3cbaa7c16d9836334bfe010b0e90f))
+
+
+### Bug Fixes
+
+* cast fillStyle to string in drawCells test ([d8d3383](https://github.com/dachrisch/sproutlings/commit/d8d3383aa7d6f4b50bc75f155f7eecf6d0cfc07e))
+
 ## [1.4.3](https://github.com/dachrisch/sproutlings/compare/v1.4.2...v1.4.3) (2026-07-27)
 
 
