@@ -1,0 +1,14 @@
+export const NEED_MAX = 100;
+export const NEED_START = 100;
+export const DECAY_PER_HOUR = 5;
+export const SAD_THRESHOLD = 30;
+export const HAPPY_THRESHOLD = 70;
+export const CRITICAL_THRESHOLD = 10;
+export const RUNAWAY_GRACE_MS = 6 * 60 * 60 * 1000;
+export const OFFLINE_CAP_MS = 12 * 60 * 60 * 1000;
+export const ACTION_RESTORE_AMOUNT = 40;
+export const TICK_INTERVAL_MS = 60_000;
+export const SAVE_VERSION = 1;
+export const GRID_SIZE = 12;
+export const PIXEL_SCALE = 4;
+export const PALETTE = ['#9bbc0f', '#8bac0f', '#306230', '#0f380f'] as const;
