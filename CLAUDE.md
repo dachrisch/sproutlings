@@ -4,9 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Sproutlings is a cozy, kid-friendly creature-collector idle game: plant seeds → grow eggs → hatch creatures → earn coins offline → buy upgrades → complete a 16-species dex. It ships as static files to a self-hosted server with **no backend and no external network calls of any kind** (COPPA-safe by construction — see `docs/sproutlings-spec.md` §2).
+Sproutlings is a cozy, kid-friendly Game Boy-style Tamagotchi: hatch a small monster from an egg, then keep it fed, happy, clean, and rested in real time. Needs decay on real wall-clock time (even while the app is closed); persistent neglect makes the monster run away, sending you back to a fresh egg — never a death screen. It ships as static files to a self-hosted server with **no backend and no external network calls of any kind** (COPPA-safe by construction).
 
-Current state: Phase 0 (scaffold) is complete. Phase 1 (MVP core loop — plots, hatching, meadow accrual, shop, dex) is next; `Garden.tsx`, `Collection.tsx`, and `Shop.tsx` are still placeholders.
+This is the third iteration of this repo: an idle plant/hatch game, then a Pokémon-style battle/collector ("Monster Collector"), and now this single-pet care game. See `docs/superpowers/specs/2026-07-28-gameboy-tamagotchi-pivot-design.md` for the pivot rationale; earlier specs (`docs/pivot-design.md`, `docs/superpowers/specs/2026-07-23-monster-development-redesign-design.md`, `docs/sproutlings-spec.md`) describe prior, now-superseded designs and are kept for history only.
 
 ## Commands
 
@@ -14,34 +14,37 @@ Current state: Phase 0 (scaffold) is complete. Phase 1 (MVP core loop — plots,
 - `npm run build` — type-check (`tsc -b`) then build static assets to `dist/`
 - `npm run preview` — serve the production build locally
 - `npm run lint` — run oxlint
-- `npm run test` — run vitest (no test files yet; passes via `passWithNoTests`)
+- `npm run test` — run vitest
 
 ## Architecture
 
-**Single flattened store.** `src/store/gameStore.ts` spreads the entire `GameState` (`src/types.ts`) directly onto the Zustand store, plus UI-only fields (`tab`, `setTab`). The store is initialized synchronously at module load from `storage.load()` (falling back to a fresh game) — there is no async loading state to handle.
+**No UI framework.** The app is plain TypeScript + Phaser 4, bootstrapped from `src/main.ts`. There is no React, no Zustand, no JSX.
 
-**Autosave via a patched `setState`.** At the bottom of `gameStore.ts`, `useGameStore.setState` is reassigned to wrap the original: every call schedules a debounced `save()` (~8s), and a `visibilitychange` listener forces an immediate save when the tab is hidden. This means any new store action must mutate state through `set(...)` — bypassing it (e.g. direct object mutation) silently breaks autosave.
+**Pure logic is framework-free.** `src/state.ts` (need decay, actions, run-away) and `src/data/pixelShapes.ts`/`src/data/species.ts` (procedural sprite data) have zero imports from Phaser or the DOM — they're plain functions over plain data, fully unit-testable with vitest alone.
 
-**`storage.ts` is the only module allowed to touch `localStorage`.** It checks `GameState.version` against `SAVE_VERSION` on load and falls back to `null` (→ fresh game) on any parse error or version mismatch — it never throws. Bump `SAVE_VERSION` in `constants.ts` when the save shape changes.
+**`src/store.ts` is the single mutable source of truth.** It owns the current `SaveData` (loaded via `src/storage.ts` at import time), applies the pure `state.ts` functions, persists after every change, and publishes changes on `src/bus.ts` (a minimal framework-free event emitter — deliberately not Phaser's, so `store.ts`/`bus.ts` stay testable without importing the Phaser package). `src/ui/controls.ts` and the Phaser scenes both subscribe to the bus rather than talking to each other directly.
 
-**`constants.ts` is the single source of truth for balance.** Prices, grow times, rarity weights/coin rates, and caps all live here. Scaling values like plot price and luck-upgrade price are exported functions (`plotPrice`, `luckUpgradePrice`), not tables — read them rather than re-deriving formulas elsewhere.
+**`storage.ts` is the only module allowed to touch `localStorage`.** It checks `SaveData.version` against `SAVE_VERSION` on load and falls back to a fresh save (`monster: null`) on any parse error or version mismatch — it never throws.
 
-**Species are pure data.** `src/data/species.ts` defines a base roster, maps in `coinsPerSec` from `RARITY_WEIGHTS`, then derives `SPECIES_MAP` (by id) and `SPECIES_BY_RARITY` (for weighted rarity rolls at hatch time). Adding a creature is a data-only change here; it does not touch any component.
+**`constants.ts` is the single source of truth for tuning**: need decay rate, run-away thresholds/grace period, offline decay cap, action restore amounts, and the fixed 4-shade Game Boy palette.
 
-**No router.** `App.tsx` reads `tab` from the store and conditionally renders `Garden` / `Collection` / `Shop` — three tabs toggled by state equality, not routes.
+**Controls are real DOM, not Phaser game objects.** Feed/Play/Clean/Sleep are `<button>` elements in `index.html`, styled around the Phaser canvas — this keeps keyboard focus and tap targets accessible without needing a UI framework.
+
+**Art and audio are 100% procedural — no asset files, no attribution needed.** Monster sprites are built from small pixel-coordinate lists (`src/data/species.ts`) drawn onto a canvas texture at boot (`src/scenes/BootScene.ts`); the four palette shades are the real DMG Game Boy green ramp. Music/SFX are synthesized at runtime via the Web Audio API (`src/audio/synth.ts`) — no external audio files.
 
 ## Design constraints that shape implementation choices
 
-- **Procedural SVG, no raster assets.** A creature is rendered from `Species` data (body shape + hue), with an optional Sparkle recolor and hat overlay — not per-species art files. See spec §7 for the intended `buildCreatureSVG` shape.
-- **Rarity, species, and Sparkle are rolled at hatch time, not plant time**, so luck upgrades bought while an egg grows still apply.
-- **Time-based idle simulation.** Plot growth (`plantedAt` + `growMs`) and meadow coin accrual are driven by wall-clock time via `lastUpdate`, so both continue while the app is closed; offline elapsed time is capped (`OFFLINE_ACCRUAL_CAP_MS`) on reload rather than applied unbounded.
-- **Phone-first, ~360px responsive**, with `prefers-reduced-motion` respected and visible keyboard focus — this is a quality floor for every phase, not just polish.
+- **Single pet, real wall-clock decay, no permanent death.** Needs (hunger/happiness/cleanliness/energy) drop based on elapsed real time, capped (`OFFLINE_CAP_MS`) so a long absence can't devastate the monster in one reload. Sustained neglect triggers a "run away" — a soft reset to a fresh egg, never a death/game-over screen.
+- **Species are procedural pixel data, not hand-painted art files.** A species is a list of `{x, y, shade}` cells on a fixed grid (`GRID_SIZE`), composed from small reusable shape helpers (`filledCircle`, `mergeCells`) — adding a species is a data-only change in `src/data/species.ts`.
+- **Phone-first, ~360px responsive**, with `prefers-reduced-motion` respected and visible keyboard focus — this is a quality floor, not polish.
 
 ## Reference docs
 
-- `docs/sproutlings-spec.md` — full design spec: systems detail, tuning table, data model, phased milestones with acceptance criteria, and quality floor. Consult it before implementing a new system (e.g. hatching, the shop, the dex) rather than inferring behavior from placeholders.
+- `docs/superpowers/specs/2026-07-28-gameboy-tamagotchi-pivot-design.md` — current, authoritative design.
+- `docs/superpowers/plans/2026-07-28-gameboy-tamagotchi-pivot.md` — implementation plan for the current design.
 - `AGENTS.md` — condensed project memory; content overlaps with this file.
+- `docs/pivot-design.md`, `docs/superpowers/specs/2026-07-23-monster-development-redesign-design.md`, `docs/sproutlings-spec.md` — superseded prior designs, kept for history.
 
 ## CI/CD
 
-Pushing any branch runs `.github/workflows/ci_branch.yaml`: node build/lint/test, then a Docker image build (nginx serving `dist/`), then a container health-check test. Pushing a tag (done by release-please, not manually) runs `.github/workflows/ci.yaml`, which additionally pushes the image to Docker Hub as `dachrisch/sproutlings:<tag>` and `:latest`. Versioned releases with changelogs are cut by `release-please` off conventional-commit messages on `master`; Renovate dependency bumps use `fix:` commits so they cascade into real releases automatically. See `docs/superpowers/specs/2026-07-22-ci-cd-infrastructure-design.md` for the full design rationale.
+Pushing any branch runs `.github/workflows/ci_branch.yaml`: node build/lint/test, then a Docker image build (nginx serving `dist/`), then a container health-check test. Pushing a tag (done by release-please, not manually) runs `.github/workflows/ci.yaml`, which additionally pushes the image to Docker Hub as `dachrisch/sproutlings:<tag>` and `:latest`. Versioned releases with changelogs are cut by `release-please` off conventional-commit messages on `master`.

@@ -1,27 +1,32 @@
 import type { SaveData } from './types';
-import { SAVE_VERSION, STORAGE_KEY } from './constants';
+import { SAVE_VERSION } from './constants';
 
-export function load(): SaveData | null {
+const STORAGE_KEY = 'sproutlings-save';
+
+function freshSave(): SaveData {
+  return {
+    version: SAVE_VERSION,
+    monster: null,
+    settings: { sound: true, reducedMotion: false },
+  };
+}
+
+export function loadSave(): SaveData {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    if (typeof parsed !== 'object' || parsed.schemaVersion !== SAVE_VERSION) {
-      return null;
-    }
-    return parsed as SaveData;
+    if (!raw) return freshSave();
+    const parsed = JSON.parse(raw) as SaveData;
+    if (parsed.version !== SAVE_VERSION) return freshSave();
+    return parsed;
   } catch {
-    return null;
+    return freshSave();
   }
 }
 
-export function save(state: SaveData): void {
+export function saveSave(data: SaveData): void {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   } catch {
+    // storage unavailable (e.g. private browsing quota) — game continues in-memory
   }
-}
-
-export function clear(): void {
-  localStorage.removeItem(STORAGE_KEY);
 }
