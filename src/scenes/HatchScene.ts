@@ -75,6 +75,7 @@ export class HatchScene extends Phaser.Scene {
       targets: egg,
       scale: 1.5,
       alpha: 0,
+      angle: 0,
       duration: 200,
       onComplete: () => {
         egg.destroy();
