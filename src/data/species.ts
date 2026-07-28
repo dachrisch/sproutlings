@@ -1,5 +1,6 @@
-import type { Species } from '../types';
-import { filledCircle, mergeCells } from './pixelShapes';
+import type { PixelCell, Species } from '../types';
+import { GRID_SIZE } from '../constants';
+import { filledCircle, mergeCells, shiftCells, closeEyes } from './pixelShapes';
 
 const blobbinBody = filledCircle(6, 6.5, 4.5, 2);
 const blobbinEyes = [
@@ -33,12 +34,45 @@ const fizzleFin = [
 ];
 const fizzleEyes = [{ x: 4, y: 5, shade: 3 as const }];
 
+const blobbinCells = mergeCells(blobbinBody, blobbinFeet, blobbinEyes);
+const nubkinCells = mergeCells(nubkinBody, nubkinHorns, nubkinEyes);
+const fizzleCells = mergeCells(fizzleBody, fizzleFin, fizzleEyes);
+
 export const SPECIES: Species[] = [
-  { id: 'blobbin', name: 'Blobbin', cells: mergeCells(blobbinBody, blobbinFeet, blobbinEyes) },
-  { id: 'nubkin', name: 'Nubkin', cells: mergeCells(nubkinBody, nubkinHorns, nubkinEyes) },
-  { id: 'fizzle', name: 'Fizzle', cells: mergeCells(fizzleBody, fizzleFin, fizzleEyes) },
+  { id: 'blobbin', name: 'Blobbin', cells: blobbinCells },
+  { id: 'nubkin', name: 'Nubkin', cells: nubkinCells },
+  { id: 'fizzle', name: 'Fizzle', cells: fizzleCells },
 ];
 
 export const SPECIES_MAP: Record<string, Species> = Object.fromEntries(
   SPECIES.map((species) => [species.id, species]),
 );
+
+export interface SpeciesFrame {
+  id: string;
+  cells: PixelCell[];
+}
+
+export interface SpeciesFrames {
+  speciesId: string;
+  base: SpeciesFrame;
+  blink: SpeciesFrame;
+  lookLeft: SpeciesFrame;
+  lookRight: SpeciesFrame;
+}
+
+function buildFrames(speciesId: string, cells: PixelCell[]): SpeciesFrames {
+  return {
+    speciesId,
+    base: { id: speciesId, cells },
+    blink: { id: `${speciesId}_blink`, cells: closeEyes(cells) },
+    lookLeft: { id: `${speciesId}_lookLeft`, cells: shiftCells(cells, -1, 0, GRID_SIZE) },
+    lookRight: { id: `${speciesId}_lookRight`, cells: shiftCells(cells, 1, 0, GRID_SIZE) },
+  };
+}
+
+export const SPECIES_FRAMES: SpeciesFrames[] = [
+  buildFrames('blobbin', blobbinCells),
+  buildFrames('nubkin', nubkinCells),
+  buildFrames('fizzle', fizzleCells),
+];

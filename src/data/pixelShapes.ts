@@ -27,3 +27,15 @@ export function mergeCells(...layers: PixelCell[][]): PixelCell[] {
   }
   return [...byKey.values()];
 }
+
+export function shiftCells(cells: PixelCell[], dx: number, dy: number, gridSize: number): PixelCell[] {
+  return cells
+    .map((cell) => ({ ...cell, x: cell.x + dx, y: cell.y + dy }))
+    .filter((cell) => cell.x >= 0 && cell.x < gridSize && cell.y >= 0 && cell.y < gridSize);
+}
+
+export function closeEyes(cells: PixelCell[]): PixelCell[] {
+  return cells.map((cell) =>
+    cell.shade === 3 ? { ...cell, shade: 2 as const } : cell
+  );
+}
