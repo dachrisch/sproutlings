@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.6.0](https://github.com/dachrisch/sproutlings/compare/v1.5.1...v1.6.0) (2026-07-28)
+
+
+### Features
+
+* add DOM name-entry panel for hatching ([97f1542](https://github.com/dachrisch/sproutlings/commit/97f1542bda4ba97fc3060560343db9672be9365a))
+* add Monster.name and ParticleShape type ([3810e58](https://github.com/dachrisch/sproutlings/commit/3810e5811222f50847821b73980b6d164c49b2c7))
+* add pet animation FSM with explicit event precedence ([59c6796](https://github.com/dachrisch/sproutlings/commit/59c6796d900595840874141f9a34a4da469e03d1))
+* add procedural particle and egg-crack pixel-cell data ([1a46a2d](https://github.com/dachrisch/sproutlings/commit/1a46a2d30d3f8f0fe9f8f5d2a864457214d13b7c))
+* animate egg-crack, species reveal, and naming in HatchScene ([5b7287c](https://github.com/dachrisch/sproutlings/commit/5b7287cea35f476f68be204be9c07b8728b14858))
+* build particle and egg-crack textures in BootScene ([4179258](https://github.com/dachrisch/sproutlings/commit/41792582440bd7d22793435ef585a1f89a487d5f))
+* drive PetScene reactions and idle mood off the animation FSM ([44023ea](https://github.com/dachrisch/sproutlings/commit/44023ea6ed568b0f95bc875b07a242babf2a9aa5))
+* pet naming, animation FSM, and richer hatch/run-away sequences ([cce9b78](https://github.com/dachrisch/sproutlings/commit/cce9b78228b4863482ab0c5c7c8da189f961335c))
+* require a name when hatching a monster ([c027a49](https://github.com/dachrisch/sproutlings/commit/c027a4975de7b541819ba02564049cae1bdc651b))
+* thread monster name through createMonster ([c966387](https://github.com/dachrisch/sproutlings/commit/c9663872a1368ac93ad1a9e14e9b980fa255bb28))
+
+
+### Bug Fixes
+
+* anchor idle animation to a fixed rest Y to prevent drift under repeated taps ([a257137](https://github.com/dachrisch/sproutlings/commit/a2571378ccbadf62396b2dc67f8c70a56e83baba))
+* reset egg angle before fade-out to avoid a visible tilt glitch ([680c36e](https://github.com/dachrisch/sproutlings/commit/680c36efe59f22ff478944da36624b57aea9dcb4))
+* reset scale in playIdle to prevent drift on interrupted reactions ([5e985fe](https://github.com/dachrisch/sproutlings/commit/5e985feb5d55afb2d28a4dbf1ab68c10cb0693b7))
+
 ## [1.5.1](https://github.com/dachrisch/sproutlings/compare/v1.5.0...v1.5.1) (2026-07-28)
 
 
