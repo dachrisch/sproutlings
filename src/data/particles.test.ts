@@ -3,7 +3,7 @@ import { PARTICLES, PARTICLES_MAP } from './particles';
 import { GRID_SIZE } from '../constants';
 
 describe('PARTICLES', () => {
-  it('defines the 7 expected particle/overlay shapes with unique ids', () => {
+  it('defines the 13 expected particle/overlay shapes with unique ids', () => {
     const ids = new Set(PARTICLES.map((p) => p.id));
     expect(ids.size).toBe(PARTICLES.length);
     expect(ids).toEqual(
@@ -15,6 +15,12 @@ describe('PARTICLES', () => {
         'particle-poof',
         'egg-crack-1',
         'egg-crack-2',
+        'prop-food-bowl',
+        'prop-food-morsel',
+        'prop-pillow',
+        'prop-ball',
+        'prop-bubbles',
+        'prop-sponge',
       ]),
     );
   });

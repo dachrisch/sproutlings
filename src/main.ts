@@ -3,6 +3,10 @@ import './style.css';
 import { BootScene } from './scenes/BootScene';
 import { PetScene } from './scenes/PetScene';
 import { HatchScene } from './scenes/HatchScene';
+import { FeedScene } from './scenes/FeedScene';
+import { SleepScene } from './scenes/SleepScene';
+import { PlayScene } from './scenes/PlayScene';
+import { CleanScene } from './scenes/CleanScene';
 import { initControls } from './ui/controls';
 import { initNameEntry } from './ui/nameEntry';
 import { initAudio } from './audio/synth';
@@ -22,7 +26,7 @@ new Phaser.Game({
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
-  scene: [BootScene, PetScene, HatchScene],
+  scene: [BootScene, PetScene, HatchScene, FeedScene, SleepScene, PlayScene, CleanScene],
 });
 
 initControls();

@@ -9,12 +9,13 @@ import {
   type PetAnimationEvent,
   type PetAnimationState,
 } from '../petAnimation';
+import { blockButtons, unblockButtons } from '../ui/controls';
 
-const REACTION_PARTICLE: Record<Need, string> = {
-  hunger: 'particle-morsel',
-  happiness: 'particle-star',
-  cleanliness: 'particle-droplet',
-  energy: 'particle-zzz',
+const ACTION_SCENE: Record<Need, string> = {
+  hunger: 'FeedScene',
+  happiness: 'PlayScene',
+  cleanliness: 'CleanScene',
+  energy: 'SleepScene',
 };
 
 export class PetScene extends Phaser.Scene {
@@ -24,6 +25,7 @@ export class PetScene extends Phaser.Scene {
   private transientTween?: Phaser.Tweens.Tween;
   private animState: PetAnimationState = initialPetAnimationState('content');
   private restY = 0;
+  private isScenePlaying = false;
 
   constructor() {
     super('Pet');
@@ -52,10 +54,12 @@ export class PetScene extends Phaser.Scene {
     bus.on(EVENTS.MONSTER_UPDATED, this.onMonsterUpdated, this);
     bus.on(EVENTS.ACTION, this.onAction, this);
     bus.on(EVENTS.RUN_AWAY, this.onRunAway, this);
+    bus.on(EVENTS.SCENE_COMPLETE, this.onSceneComplete, this);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       bus.off(EVENTS.MONSTER_UPDATED, this.onMonsterUpdated, this);
       bus.off(EVENTS.ACTION, this.onAction, this);
       bus.off(EVENTS.RUN_AWAY, this.onRunAway, this);
+      bus.off(EVENTS.SCENE_COMPLETE, this.onSceneComplete, this);
     });
   }
 
@@ -76,7 +80,22 @@ export class PetScene extends Phaser.Scene {
   }
 
   private onAction(need: Need): void {
-    this.dispatch({ type: 'ACTION', need });
+    if (this.isScenePlaying) return;
+    this.isScenePlaying = true;
+    blockButtons();
+    this.idleTween?.pause();
+    const sceneName = ACTION_SCENE[need];
+    this.scene.launch(sceneName, { speciesId: this.sprite?.texture.key ?? 'blobbin' });
+  }
+
+  private onSceneComplete(): void {
+    this.isScenePlaying = false;
+    unblockButtons();
+    this.idleTween?.resume();
+    const monster = store.getMonster();
+    if (monster) {
+      this.dispatch({ type: 'MOOD_UPDATED', mood: moodFor(monster) });
+    }
   }
 
   private onRunAway(): void {
@@ -134,6 +153,13 @@ export class PetScene extends Phaser.Scene {
     const sprite = this.sprite;
     const onComplete = () => this.complete();
 
+    const particleMap: Record<Need, string> = {
+      hunger: 'particle-morsel',
+      happiness: 'particle-star',
+      cleanliness: 'particle-droplet',
+      energy: 'particle-zzz',
+    };
+
     switch (need) {
       case 'hunger':
         this.transientTween = this.tweens.add({
@@ -179,7 +205,7 @@ export class PetScene extends Phaser.Scene {
         break;
     }
 
-    this.spawnParticle(REACTION_PARTICLE[need], sprite.x, sprite.y - 16);
+    this.spawnParticle(particleMap[need], sprite.x, sprite.y - 16);
   }
 
   private playMoodShift(to: Mood): void {
