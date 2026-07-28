@@ -19,6 +19,7 @@ describe('storage', () => {
       version: SAVE_VERSION,
       monster: {
         speciesId: 'blobbin',
+        name: 'Sprout',
         hunger: 80,
         happiness: 90,
         cleanliness: 70,
