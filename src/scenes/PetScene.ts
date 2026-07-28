@@ -110,6 +110,7 @@ export class PetScene extends Phaser.Scene {
     this.idleTween?.stop();
     this.sprite.setAngle(0);
     this.sprite.setY(this.restY);
+    this.sprite.setScale(1);
     const baseY = this.restY;
     const bounce = mood === 'happy' ? 6 : mood === 'sad' ? 1 : 3;
     const duration = mood === 'sad' ? 1400 : 700;
