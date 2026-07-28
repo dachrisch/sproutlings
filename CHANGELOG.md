@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.0](https://github.com/dachrisch/sproutlings/compare/v1.6.0...v1.7.0) (2026-07-28)
+
+
+### Features
+
+* full action scenes for Feed/Sleep/Play/Clean ([#31](https://github.com/dachrisch/sproutlings/issues/31)) ([19abc48](https://github.com/dachrisch/sproutlings/commit/19abc48a16dbfa3e61573565cab00b3ec890d9c0))
+
 ## [1.6.0](https://github.com/dachrisch/sproutlings/compare/v1.5.1...v1.6.0) (2026-07-28)
 
 
