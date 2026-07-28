@@ -4,6 +4,7 @@ import { BootScene } from './scenes/BootScene';
 import { PetScene } from './scenes/PetScene';
 import { HatchScene } from './scenes/HatchScene';
 import { initControls } from './ui/controls';
+import { initNameEntry } from './ui/nameEntry';
 import { initAudio } from './audio/synth';
 import * as store from './store';
 
@@ -25,5 +26,6 @@ new Phaser.Game({
 });
 
 initControls();
+initNameEntry();
 initAudio();
 store.start();

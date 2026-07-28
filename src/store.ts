@@ -41,8 +41,8 @@ export function getSettings() {
   return _settings;
 }
 
-export function hatchNewMonster(): void {
-  _monster = createMonster(Date.now());
+export function hatchNewMonster(name: string, speciesId?: string): void {
+  _monster = createMonster(Date.now(), name, speciesId);
   save();
   bus.emit(EVENTS.MONSTER_UPDATED, _monster);
 }

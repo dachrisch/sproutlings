@@ -8,6 +8,7 @@ const HOUR = 60 * 60 * 1000;
 function monsterAt(now: number, overrides: Partial<Monster> = {}): Monster {
   return {
     speciesId: 'blobbin',
+    name: 'Sprout',
     hunger: NEED_MAX,
     happiness: NEED_MAX,
     cleanliness: NEED_MAX,
@@ -21,15 +22,20 @@ function monsterAt(now: number, overrides: Partial<Monster> = {}): Monster {
 
 describe('createMonster', () => {
   it('starts every need at maximum', () => {
-    const monster = createMonster(0, 'blobbin');
+    const monster = createMonster(0, 'Sprout', 'blobbin');
     expect(monster.hunger).toBe(NEED_MAX);
     expect(monster.happiness).toBe(NEED_MAX);
     expect(monster.cleanliness).toBe(NEED_MAX);
     expect(monster.energy).toBe(NEED_MAX);
   });
 
+  it('sets the given name', () => {
+    const monster = createMonster(0, 'Sprout', 'blobbin');
+    expect(monster.name).toBe('Sprout');
+  });
+
   it('picks a species deterministically when a random function is given', () => {
-    const monster = createMonster(0, undefined, () => 0);
+    const monster = createMonster(0, 'Sprout', undefined, () => 0);
     expect(monster.speciesId).toBe('blobbin');
   });
 });

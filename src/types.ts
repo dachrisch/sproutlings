@@ -2,6 +2,7 @@ export type Need = 'hunger' | 'happiness' | 'cleanliness' | 'energy';
 
 export interface Monster {
   speciesId: string;
+  name: string;
   hunger: number;
   happiness: number;
   cleanliness: number;
@@ -26,5 +27,10 @@ export interface PixelCell {
 export interface Species {
   id: string;
   name: string;
+  cells: PixelCell[];
+}
+
+export interface ParticleShape {
+  id: string;
   cells: PixelCell[];
 }

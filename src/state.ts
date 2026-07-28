@@ -18,10 +18,16 @@ function clamp(value: number): number {
   return Math.max(0, Math.min(NEED_MAX, value));
 }
 
-export function createMonster(now: number, speciesId?: string, random: () => number = Math.random): Monster {
+export function createMonster(
+  now: number,
+  name: string,
+  speciesId?: string,
+  random: () => number = Math.random,
+): Monster {
   const id = speciesId ?? SPECIES[Math.floor(random() * SPECIES.length)].id;
   return {
     speciesId: id,
+    name,
     hunger: NEED_START,
     happiness: NEED_START,
     cleanliness: NEED_START,
