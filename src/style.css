@@ -47,7 +47,8 @@ body {
 }
 
 .needs[hidden],
-.buttons[hidden] {
+.buttons[hidden],
+.name-entry[hidden] {
   display: none;
 }
 
@@ -102,6 +103,49 @@ body {
 .buttons button:active {
   background: #306230;
   color: #9bbc0f;
+}
+
+.name-entry {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.name-entry label {
+  color: #f5f5f0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.name-entry input {
+  min-height: 44px;
+  border-radius: 10px;
+  border: none;
+  padding: 0 12px;
+  font-size: 15px;
+  background: #0f380f;
+  color: #9bbc0f;
+}
+
+.name-entry input:focus-visible {
+  outline: 3px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.name-entry button {
+  min-height: 48px;
+  border-radius: 10px;
+  border: none;
+  background: #8bac0f;
+  color: #0f380f;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.name-entry button:focus-visible {
+  outline: 3px solid #ffffff;
+  outline-offset: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {

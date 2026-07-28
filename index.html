@@ -22,6 +22,11 @@
         <button type="button" data-action="cleanliness">Clean</button>
         <button type="button" data-action="energy">Sleep</button>
       </div>
+      <form class="name-entry" id="name-entry" hidden>
+        <label for="name-input">Name your pet</label>
+        <input id="name-input" type="text" maxlength="16" autocomplete="off" />
+        <button id="name-confirm" type="submit">Confirm</button>
+      </form>
     </div>
     <script type="module" src="/src/main.ts"></script>
     <script>
