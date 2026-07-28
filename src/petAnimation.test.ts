@@ -60,6 +60,17 @@ describe('transitionPetAnimation', () => {
     });
   });
 
+  it('an ACTION while reacting with the same need restarts (creates new state, not no-op)', () => {
+    const state = { kind: 'reacting', need: 'hunger', mood: 'content' } as const;
+    const next = transitionPetAnimation(state, { type: 'ACTION', need: 'hunger' });
+    expect(next).toEqual({
+      kind: 'reacting',
+      need: 'hunger',
+      mood: 'content',
+    });
+    expect(next).not.toBe(state);
+  });
+
   it('a MOOD_UPDATED while reacting updates the mood silently without leaving reacting', () => {
     const state = { kind: 'reacting', need: 'hunger', mood: 'content' } as const;
     expect(transitionPetAnimation(state, { type: 'MOOD_UPDATED', mood: 'sad' })).toEqual({
