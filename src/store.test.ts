@@ -16,21 +16,23 @@ describe('store', () => {
     expect(store.getMonster()).toBeNull();
   });
 
-  it('hatchNewMonster creates and persists a monster', async () => {
+  it('hatchNewMonster creates and persists a named monster', async () => {
     const store = await freshStore();
-    store.hatchNewMonster();
+    store.hatchNewMonster('Sprout');
     expect(store.getMonster()).not.toBeNull();
     expect(store.getMonster()?.hunger).toBe(NEED_MAX);
+    expect(store.getMonster()?.name).toBe('Sprout');
 
     const speciesId = store.getMonster()?.speciesId;
     vi.resetModules();
     const reloaded = await import('./store');
     expect(reloaded.getMonster()?.speciesId).toBe(speciesId);
+    expect(reloaded.getMonster()?.name).toBe('Sprout');
   });
 
   it('performAction restores the targeted need', async () => {
     const store = await freshStore();
-    store.hatchNewMonster();
+    store.hatchNewMonster('Sprout');
     store.performAction('hunger');
     expect(store.getMonster()!.hunger).toBe(NEED_MAX);
   });
@@ -40,7 +42,7 @@ describe('store', () => {
     const { bus, EVENTS } = await import('./bus');
     const seen: unknown[] = [];
     bus.on(EVENTS.MONSTER_UPDATED, (monster: unknown) => seen.push(monster));
-    store.hatchNewMonster();
+    store.hatchNewMonster('Sprout');
     store.performAction('hunger');
     expect(seen).toHaveLength(2);
   });
