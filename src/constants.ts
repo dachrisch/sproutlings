@@ -12,3 +12,4 @@ export const SAVE_VERSION = 1;
 export const GRID_SIZE = 12;
 export const PIXEL_SCALE = 4;
 export const PALETTE = ['#9bbc0f', '#8bac0f', '#306230', '#0f380f'] as const;
+export const MAX_NAME_LENGTH = 16;
