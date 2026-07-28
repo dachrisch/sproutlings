@@ -84,6 +84,7 @@ git commit -m "feat: add Monster.name and ParticleShape type"
 **Files:**
 - Modify: `src/state.ts`
 - Modify: `src/state.test.ts`
+- Modify: `src/storage.test.ts`
 
 **Interfaces:**
 - Consumes: `Monster.name` (Task 1).
@@ -168,10 +169,41 @@ export function createMonster(
 Run: `npm run test -- src/state.test.ts`
 Expected: PASS, 19 tests.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Fix the other `Monster` object literal that predates `name`**
+
+`src/storage.test.ts`'s "round-trips a saved monster" test builds a `Monster` object literal directly (not via `createMonster`) and will now fail to type-check since `name` is a required field. Edit `src/storage.test.ts`, adding `name: 'Sprout',` to the monster literal (right after `speciesId: 'blobbin',`):
+
+```ts
+  it('round-trips a saved monster', () => {
+    const data: SaveData = {
+      version: SAVE_VERSION,
+      monster: {
+        speciesId: 'blobbin',
+        name: 'Sprout',
+        hunger: 80,
+        happiness: 90,
+        cleanliness: 70,
+        energy: 60,
+        bornAt: 1000,
+        lastUpdate: 2000,
+        criticalSince: null,
+      },
+      settings: { sound: true, reducedMotion: false },
+    };
+    saveSave(data);
+    expect(loadSave()).toEqual(data);
+  });
+```
+
+- [ ] **Step 6: Verify the full project builds, lints, and tests pass**
+
+Run: `npm run build && npm run lint && npm run test`
+Expected: all succeed — this is the first point since Task 1 where the whole project type-checks again.
+
+- [ ] **Step 7: Commit**
 
 ```bash
-git add src/state.ts src/state.test.ts
+git add src/state.ts src/state.test.ts src/storage.test.ts
 git commit -m "feat: thread monster name through createMonster"
 ```
 
