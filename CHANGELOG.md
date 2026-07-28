@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.0](https://github.com/dachrisch/sproutlings/compare/v1.7.0...v1.8.0) (2026-07-28)
+
+
+### Features
+
+* make idle creature feel alive with behavioral repertoire ([#33](https://github.com/dachrisch/sproutlings/issues/33)) ([1a15549](https://github.com/dachrisch/sproutlings/commit/1a15549510b3c0d53585efbc515a98cde401486d))
+
 ## [1.7.0](https://github.com/dachrisch/sproutlings/compare/v1.6.0...v1.7.0) (2026-07-28)
 
 
