@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.1](https://github.com/dachrisch/sproutlings/compare/v1.5.0...v1.5.1) (2026-07-28)
+
+
+### Bug Fixes
+
+* apply listener context in event bus emit ([eca70ae](https://github.com/dachrisch/sproutlings/commit/eca70aed211f6b93349c684964792b34a9ebd368))
+* apply listener context in event bus emit ([0ce4db7](https://github.com/dachrisch/sproutlings/commit/0ce4db770840b76daa1c4214dd9bb63f70c7fa5f))
+
 ## [1.5.0](https://github.com/dachrisch/sproutlings/compare/v1.4.3...v1.5.0) (2026-07-27)
 
 
