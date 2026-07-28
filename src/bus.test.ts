@@ -17,4 +17,15 @@ describe('bus', () => {
     bus.emit(EVENTS.RUN_AWAY);
     expect(listener).not.toHaveBeenCalled();
   });
+
+  it('invokes the listener with the context passed to on()', () => {
+    const ctx = { seen: undefined as unknown };
+    function listener(this: typeof ctx, value: unknown) {
+      this.seen = value;
+    }
+    bus.on(EVENTS.ACTION, listener, ctx);
+    bus.emit(EVENTS.ACTION, 'hunger');
+    expect(ctx.seen).toBe('hunger');
+    bus.off(EVENTS.ACTION, listener);
+  });
 });

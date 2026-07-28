@@ -23,6 +23,6 @@ export const bus = {
     listeners.set(event, entries.filter((e) => e.fn !== fn));
   },
   emit(event: string, ...args: any[]): void {
-    listeners.get(event)?.forEach(({ fn }) => fn(...args));
+    listeners.get(event)?.forEach(({ fn, ctx }) => fn.apply(ctx, args));
   },
 };
