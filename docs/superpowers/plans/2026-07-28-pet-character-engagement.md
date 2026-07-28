@@ -723,10 +723,13 @@ export class BootScene extends Phaser.Scene {
 }
 ```
 
-- [ ] **Step 2: Verify the project still builds and lints**
+- [ ] **Step 2: Verify the project still lints, and builds with only the known pre-existing error**
 
-Run: `npm run build && npm run lint`
-Expected: both succeed.
+Run: `npm run lint`
+Expected: succeeds clean.
+
+Run: `npm run build`
+Expected: FAILS with exactly one error, `src/scenes/HatchScene.ts(18,13): error TS2554: Expected 1-2 arguments, but got 0.` — this is a pre-existing gap (HatchScene still calls the old 0-arg `hatchNewMonster()`) that Task 8 fixes, not this task. If the build fails with any *other* or *additional* error, that's a real regression from this task's change — investigate before committing.
 
 - [ ] **Step 3: Commit**
 
