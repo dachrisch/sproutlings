@@ -10,6 +10,7 @@ export const EVENTS = {
   MONSTER_UPDATED: 'MONSTER_UPDATED',
   ACTION: 'ACTION',
   RUN_AWAY: 'RUN_AWAY',
+  SCENE_COMPLETE: 'SCENE_COMPLETE',
 } as const;
 
 export const bus = {
