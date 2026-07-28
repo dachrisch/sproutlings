@@ -967,10 +967,13 @@ initAudio();
 store.start();
 ```
 
-- [ ] **Step 8: Verify the project builds, lints, and tests pass**
+- [ ] **Step 8: Verify the project lints and tests pass, and builds with only the known pre-existing error**
 
-Run: `npm run build && npm run lint && npm run test`
-Expected: all succeed.
+Run: `npm run lint && npm run test`
+Expected: both succeed.
+
+Run: `npm run build`
+Expected: FAILS with exactly one error, `src/scenes/HatchScene.ts(18,13): error TS2554: Expected 1-2 arguments, but got 0.` — pre-existing, fixed by Task 8, not this task. Any *other* or *additional* error means this task introduced a regression — investigate before committing.
 
 - [ ] **Step 9: Commit**
 
