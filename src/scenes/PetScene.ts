@@ -23,6 +23,7 @@ export class PetScene extends Phaser.Scene {
   private idleTween?: Phaser.Tweens.Tween;
   private transientTween?: Phaser.Tweens.Tween;
   private animState: PetAnimationState = initialPetAnimationState('content');
+  private restY = 0;
 
   constructor() {
     super('Pet');
@@ -42,6 +43,7 @@ export class PetScene extends Phaser.Scene {
       .text(80, 12, monster.name, { fontSize: '12px', color: '#0f380f' })
       .setOrigin(0.5);
     this.sprite = this.add.image(80, 80, monster.speciesId).setOrigin(0.5);
+    this.restY = this.sprite.y;
     this.cameras.main.filters.internal.addGlow(0x0f380f, 1, 0);
 
     this.animState = initialPetAnimationState(moodFor(monster));
@@ -107,7 +109,8 @@ export class PetScene extends Phaser.Scene {
     if (!this.sprite) return;
     this.idleTween?.stop();
     this.sprite.setAngle(0);
-    const baseY = this.sprite.y;
+    this.sprite.setY(this.restY);
+    const baseY = this.restY;
     const bounce = mood === 'happy' ? 6 : mood === 'sad' ? 1 : 3;
     const duration = mood === 'sad' ? 1400 : 700;
     const targetAngle = mood === 'happy' ? 4 : mood === 'sad' ? -3 : 0;
@@ -220,7 +223,7 @@ export class PetScene extends Phaser.Scene {
     this.transientTween?.stop();
     const sprite = this.sprite;
     this.spawnParticle('particle-poof', sprite.x, sprite.y);
-    this.tweens.add({
+    this.transientTween = this.tweens.add({
       targets: sprite,
       y: sprite.y - 30,
       alpha: 0,
