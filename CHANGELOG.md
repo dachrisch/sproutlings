@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.11](https://github.com/dachrisch/sproutlings/compare/v1.8.10...v1.8.11) (2026-10-08)
+
+
+### Miscellaneous Chores
+
+* release 1.8.11 after Docker Hub token rotation ([14336da](https://github.com/dachrisch/sproutlings/commit/14336dae1688974817e72cc72b5a9d918f49bb8a))
+
 ## [1.8.10](https://github.com/dachrisch/sproutlings/compare/v1.8.9...v1.8.10) (2026-10-05)
 
 
