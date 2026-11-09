@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.17](https://github.com/dachrisch/sproutlings/compare/v1.8.16...v1.8.17) (2026-11-09)
+
+
+### Bug Fixes
+
+* **deps:** lock file maintenance ([#106](https://github.com/dachrisch/sproutlings/issues/106)) ([7a1030f](https://github.com/dachrisch/sproutlings/commit/7a1030f3c59b246a4d3f57e23be71803ba233c4b))
+
 ## [1.8.16](https://github.com/dachrisch/sproutlings/compare/v1.8.15...v1.8.16) (2026-11-02)
 
 
